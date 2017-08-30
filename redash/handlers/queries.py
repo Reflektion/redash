@@ -2,10 +2,11 @@ from itertools import chain
 
 import sqlparse
 from flask import jsonify, request
-from funcy import distinct, take
-
 from flask_login import login_required
 from flask_restful import abort
+from funcy import distinct, take
+from sqlalchemy.orm.exc import StaleDataError
+
 from redash import models, settings
 from redash.handlers.base import (BaseResource, get_object_or_404,
                                   org_scoped_rule, paginate, routes)
@@ -15,7 +16,6 @@ from redash.permissions import (can_modify, not_view_only, require_access,
                                 require_object_modify_permission,
                                 require_permission, view_only)
 from redash.utils import collect_parameters_from_request
-from sqlalchemy.orm.exc import StaleDataError
 
 
 @routes.route(org_scoped_rule('/api/queries/format'), methods=['POST'])
@@ -60,20 +60,20 @@ class QueryRecentResource(BaseResource):
 
         if settings.FEATURE_DUMB_RECENTS:
             results = models.Query.by_user(self.current_user).order_by(models.Query.updated_at.desc()).limit(10)
-            queries = [q.to_dict(with_last_modified_by=False) for q in results]
+            queries = [q.to_dict(with_last_modified_by=False, with_user=False) for q in results]
         else:
             queries = models.Query.recent(self.current_user.group_ids, self.current_user.id)
-            recent = [d.to_dict(with_last_modified_by=False) for d in queries]
+            recent = [d.to_dict(with_last_modified_by=False, with_user=False) for d in queries]
 
             global_recent = []
             if len(recent) < 10:
-                global_recent = [d.to_dict(with_last_modified_by=False) for d in models.Query.recent(self.current_user.group_ids)]
+                global_recent = [d.to_dict(with_last_modified_by=False, with_user=False) for d in models.Query.recent(self.current_user.group_ids)]
 
             queries = take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
 
         return queries
 
-
+# called when new query is created
 class QueryListResource(BaseResource):
     @require_permission('create_query')
     def post(self):
@@ -110,12 +110,18 @@ class QueryListResource(BaseResource):
         :>json number runtime: Runtime of last query execution, in seconds (may be null)
         """
         query_def = request.get_json(force=True)
+        query = self.add_query(query_def)
+
+        return query.to_dict()
+
+    def add_query(self, query_def):
         data_source = models.DataSource.get_by_id_and_org(query_def.pop('data_source_id'), self.current_org)
         require_access(data_source.groups, self.current_user, not_view_only)
 
         for field in ['id', 'created_at', 'api_key', 'visualizations', 'latest_query_data', 'last_modified_by']:
             query_def.pop(field, None)
 
+        # plain text query
         query_def['query_text'] = query_def.pop('query')
         query_def['user'] = self.current_user
         query_def['data_source'] = data_source
@@ -130,8 +136,8 @@ class QueryListResource(BaseResource):
             'object_id': query.id,
             'object_type': 'query'
         })
+        return query
 
-        return query.to_dict()
 
     @require_permission('view_query')
     def get(self):
@@ -266,8 +272,12 @@ class QueryRefreshResource(BaseResource):
         Responds with query task details.
         """
         query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
+        # authentication
         require_access(query.groups, self.current_user, not_view_only)
 
         parameter_values = collect_parameters_from_request(request.args)
+
+        #shubham
+        # call module to translate
 
         return run_query(query.data_source, parameter_values, query.query_text, query.id)

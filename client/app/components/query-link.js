@@ -10,7 +10,7 @@ function QueryLinkController() {
     }
   }
 
-  this.link = this.query.getUrl(false, hash);
+  this.link = this.query.getUrl(true, hash);
 }
 
 export default function (ngModule) {

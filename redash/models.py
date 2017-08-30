@@ -684,6 +684,22 @@ class QueryResult(db.Model, BelongsToOrgMixin):
 
         return query_result, query_ids
 
+    def is_same_query(self,query_text,data_source):
+        #query_hash = utils.gen_query_hash(query)
+
+        # if same query_text already exists don't do the auto save
+        #logging.info("query text is {}".format(query_text))
+        queries = db.session.query(Query).filter(
+            Query.query_text == query_text,
+            Query.data_source == data_source,
+            Query.is_archived == False)
+        query_ids = [q.id for q in queries]
+        logging.info("query_ids is {}".format(query_ids))
+        if len(query_ids) != 0:
+            return True
+        else:
+            return False
+
     def __unicode__(self):
         return u"%d | %s | %s" % (self.id, self.query_hash, self.retrieved_at)
 
@@ -707,7 +723,7 @@ class QueryResult(db.Model, BelongsToOrgMixin):
         s = cStringIO.StringIO()
 
         query_data = json.loads(self.data)
-        book = xlsxwriter.Workbook(s)
+        book = xlsxwriter.Workbook(s, {'constant_memory': True})
         sheet = book.add_worksheet("result")
 
         column_names = []
@@ -756,6 +772,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     latest_query_data_id = Column(db.Integer, db.ForeignKey("query_results.id"), nullable=True)
     latest_query_data = db.relationship(QueryResult)
     name = Column(db.String(255))
+    #display_name = Column(db.String(255))
     description = Column(db.String(4096), nullable=True)
     query_text = Column("query", db.Text)
     query_hash = Column(db.String(32))
@@ -915,7 +932,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
 
     @classmethod
     def recent(cls, group_ids, user_id=None, limit=20):
-        query = (cls.query.options(subqueryload(Query.user))
+        query = (cls.query
                  .filter(Event.created_at > (db.func.current_date() - 7))
                  .join(Event, Query.id == Event.object_id.cast(db.Integer))
                  .join(DataSourceGroup, Query.data_source_id == DataSourceGroup.data_source_id)
@@ -1150,18 +1167,20 @@ class Alert(TimestampMixin, db.Model):
 
     def evaluate(self):
         data = json.loads(self.query_rel.latest_query_data.data)
-        # todo: safe guard for empty
-        value = data['rows'][0][self.options['column']]
-        op = self.options['op']
+        if data['rows']:
+            value = data['rows'][0][self.options['column']]
+            op = self.options['op']
 
-        if op == 'greater than' and value > self.options['value']:
-            new_state = self.TRIGGERED_STATE
-        elif op == 'less than' and value < self.options['value']:
-            new_state = self.TRIGGERED_STATE
-        elif op == 'equals' and value == self.options['value']:
-            new_state = self.TRIGGERED_STATE
+            if op == 'greater than' and value > self.options['value']:
+                new_state = self.TRIGGERED_STATE
+            elif op == 'less than' and value < self.options['value']:
+                new_state = self.TRIGGERED_STATE
+            elif op == 'equals' and value == self.options['value']:
+                new_state = self.TRIGGERED_STATE
+            else:
+                new_state = self.OK_STATE
         else:
-            new_state = self.OK_STATE
+            new_state = self.UNKNOWN_STATE
 
         return new_state
 
@@ -1481,8 +1500,9 @@ class NotificationDestination(BelongsToOrgMixin, db.Model):
     user = db.relationship(User, backref="notification_destinations")
     name = Column(db.String(255))
     type = Column(db.String(255))
-    options = Column(Configuration)
+    options = Column(ConfigurationContainer.as_mutable(Configuration))
     created_at = Column(db.DateTime(True), default=db.func.now())
+
     __tablename__ = 'notification_destinations'
     __table_args__ = (db.Index('notification_destinations_org_id_name', 'org_id',
                                'name', unique=True),)
