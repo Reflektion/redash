@@ -1,12 +1,5 @@
 import json
 import time
-<<<<<<< HEAD
-import re
-#import nltk
-#from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
-=======
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
 import pystache
 from flask import make_response, request
@@ -18,104 +11,13 @@ from redash.permissions import require_permission, not_view_only, has_access, re
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.utils import collect_query_parameters, collect_parameters_from_request
 from redash.tasks.queries import enqueue_query
-<<<<<<< HEAD
-import redash.utils.spell_checker as sc
-
-from redash.handlers.visualizations import VisualizationListResource
-#from redash.handlers.queries import QueryListResource
-=======
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
 
 def error_response(message):
     return {'job': {'status': 4, 'error': message}}, 400
 
-<<<<<<< HEAD
-def get_mappings():
-    mapper = {}
-    sentences = []
-    sqls = []
-
-    sentences.append("show me numbers of millennials who showed interest in auto and rental insurances in last month")
-    sentences.append("show me numbers of millennials who showed interest in home insurances in last month")
-    sentences.append("show me numbers of 40 year and above looking to purchase umbrella insurance")
-    sentences.append("how many usaa families are not engaging in email marketing campaign across california region in 2016")
-    sentences.append("how many usaa families are engaging in monthly email marketing campaign across california region in 2016")
-    sentences.append("which newsletter getting highest engagements in 2016")
-    sentences.append("show me usaa families who has purchased small business insurance across texas")
-    sentences.append("transaction volume of renewal transactions in 2016 across states")
-    sentences.append("how many requests for auto loan came through last year search engine marketing campaigns?")
-
-    sqls.append("select count(*) from (select f.family_id from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Rental Insurance' or prod_name='Auto Insurance' and act_date > '2017-06-01' and dob > '1990-01-01' group by f.family_id having count(distinct p.prod_id)>1) as A;")
-    sqls.append("select count(*) from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Home Insurance' and act_date > '2017-06-01' and dob > '1990-01-01';")
-    sqls.append("select count(*) from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Umbrella Insurance' and dob < '1977-01-01';")
-    sqls.append("select count(*) from families where family_id not in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and marketing='email') and state='california';")
-    sqls.append("select count(*) from families where family_id in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and marketing='email') and state='california';")
-    sqls.append("select prod_name from finance_products where prod_id=(select prod_id from transactions group by prod_id order by count(*) desc limit 1);")
-    sqls.append("select f.family_id, f.last_name from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Small Business Insurance' and state='texas' and activity='purchased';")
-    sqls.append("select state,count(*) from families where family_id in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and activity='renewed') group by state;")
-    sqls.append("select count(*) from transactions where marketing='search' and prod_id=(select prod_id from finance_products where prod_name='Auto Insurance');")
-
-    assert(len(sentences)==len(sqls))
-    for i in range(len(sentences)):
-        f = stem_filter_check(sentences[i])
-        mapper[f] = (sqls[i],'q'+str(i+1)+'_query',sentences[i])
-       # map(result of stem-filter-check) = (sql-transalation , q3_query , cleaned english sentence) 
-
-    mapper['Show me the number of male and female employees']=('select gender,count(*) from employees group by gender;','gender_query')
-    mapper['Show the number of employees in each department']=('select dept_no,count(*) from dept_emp group by dept_no;','')
-    mapper['What is the number of employees in each title']=('select title,count(*) from titles group by title;','title_query')
-    mapper['What are the last names of the employees whose salary is more than 150000']=('select last_name from employees where emp_no in (select emp_no from salaries where salary > 150000);','')
-    return mapper
-
-def stem_filter_check(ip_string):
-    f = re.findall(r"[\w]+",ip_string.lower())
-    #f = " ".join(f)
-    corrected_words = [sc.correction(i) for i in f]
-
-    stop_words = set(['me','of','a','in','to','are','is','for','am','on']) 
-    #stop_words = set(stopwords.words('english'))
-    stop_words = stop_words - set(['which','how','where','what','and','or'])
-    filtered_words = [i for i in corrected_words if i not in stop_words]
-
-    stemmer = SnowballStemmer("english")
-    #stemmed_words = filtered_words 
-    stemmed_words = [stemmer.stem(i) for i in filtered_words]
-
-    return "".join(stemmed_words)
-
-
-def translate(ip_string):
-    processed_str = stem_filter_check(ip_string)
-    mapper = get_mappings()
-    if mapper.has_key(processed_str):
-        return mapper[processed_str][0].decode('unicode-escape')
-    else:
-        return 'NA'
-
 
 def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
-    # adds a job if max_age=0 -> /job and /event calls 
-    # how is status=3 prompting /query_results/2 call ?
-    # anyway, query_result/2 call - model.py - gets final result through db.sessions
-    # how is celery job connected to db.session object ??
-
-    #return error_response('New Query text variable is <{}>, param values is <{}>, query id is <{}>, max age is <{}>'.format(query_text,parameter_values,query_id, max_age))
-    original_text = query_text
-    query_text = translate(query_text)
-    if query_text == 'NA':
-        query_text = original_text
-
-    #return error_response('New Query text variable is <{}>, param values is <{}>, query id is <{}>, max age is <{}>'.format(query_text,parameter_values,query_id, max_age))
-=======
-
-def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
-
-    #test = 'Query text var is {}'.format(query_text)
-    #return error_response(test)
-    # shubham - query_text plain text str -- call our ML module here!!
-
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
     query_parameters = set(collect_query_parameters(query_text))
     missing_params = set(query_parameters) - set(parameter_values.keys())
     if missing_params:
@@ -135,10 +37,6 @@ def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
     if max_age == 0:
         query_result = None
     else:
-<<<<<<< HEAD
-=======
-        #shubham
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
         query_result = models.QueryResult.get_latest(data_source, query_text, max_age)
 
     if query_result:
@@ -148,7 +46,6 @@ def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
         return {'job': job.to_dict()}
 
 
-# execute directly query
 class QueryResultListResource(BaseResource):
     @require_permission('execute_query')
     def post(self):
@@ -179,10 +76,6 @@ class QueryResultListResource(BaseResource):
             'object_type': 'data_source',
             'query': query
         })
-<<<<<<< HEAD
-
-=======
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
         return run_query(data_source, parameter_values, query, query_id, max_age)
 
 
@@ -233,10 +126,6 @@ class QueryResultResource(BaseResource):
         # This method handles two cases: retrieving result by id & retrieving result by query id.
         # They need to be split, as they have different logic (for example, retrieving by query id
         # should check for query parameters and shouldn't cache the result).
-<<<<<<< HEAD
-
-=======
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
         should_cache = query_result_id is not None
         if query_result_id is None and query_id is not None:
             query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
@@ -245,11 +134,6 @@ class QueryResultResource(BaseResource):
 
         if query_result_id:
             query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, self.current_org)
-<<<<<<< HEAD
-            # this is the table only result - a new one every time execute button is clicked
-            # don't update this variable - can't call another func here cause we don't have query_id to update (maybe adhoc)
-=======
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
         else:
             query_result = None
 
@@ -277,38 +161,8 @@ class QueryResultResource(BaseResource):
 
                 record_event.delay(event)
 
-<<<<<<< HEAD
-            query_result_dict = query_result.to_dict()
-
-            # TODO saving again even saved queries - Solved
-            # but correct way is through frontend js ... sepearate endpoint, here same string saved again as new query won't auto visualise
-            # another bug ? if sql directly typed again - then auto visualize wont happen
-            
-            mapper = get_mappings()
-            file_name = None
-            saved_query_id = None
-            for k in mapper:
-                if (mapper[k][0] == query_result_dict['query']):
-                    file_name = mapper[k][1]
-                    query_text = mapper[k][2]
-            #query_name = None
-            if file_name:
-                if (not query_result.is_same_query(query_text, query_result.data_source)):
-                    # 1. save the query 2. get predefined visual json 3. add json to query object visualizations
-                    visualization_resource = VisualizationListResource()
-                    # TODO try catch
-                    saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
-
-            if saved_query_id:
-                query_result_dict['query_id'] = saved_query_id
-
-
-            if filetype == 'json':
-                response = self.make_json_response(query_result_dict)
-=======
             if filetype == 'json':
                 response = self.make_json_response(query_result)
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
             elif filetype == 'xlsx':
                 response = self.make_excel_response(query_result)
             else:
@@ -325,14 +179,8 @@ class QueryResultResource(BaseResource):
         else:
             abort(404, message='No cached result found for this query.')
 
-<<<<<<< HEAD
-
-    def make_json_response(self, query_result_dict):
-        data = json.dumps({'query_result': query_result_dict}, cls=utils.JSONEncoder)
-=======
     def make_json_response(self, query_result):
         data = json.dumps({'query_result': query_result.to_dict()}, cls=utils.JSONEncoder)
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
         headers = {'Content-Type': "application/json"}
         return make_response(data, 200, headers)
 

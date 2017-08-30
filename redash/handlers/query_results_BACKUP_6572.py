@@ -41,7 +41,7 @@ def get_mappings():
     sentences.append("how many requests for auto loan came through last year search engine marketing campaigns?")
     
     sentences.append("show number of transactions for each product")
-    sentences.append("get number of transactions for Auto Insurance and Rental Insurance grouped by month")
+    sentences.append("get number of transactions for auto insurance and rental insurance grouped by month")
     sentences.append("show me number of transactions for each state as a map")
 
 
@@ -96,8 +96,6 @@ def translate(ip_string):
     else:
         return 'NA'
 
-<<<<<<< HEAD
-=======
 
 #
 # Run a parameterized query synchronously and return the result
@@ -147,7 +145,6 @@ def run_query_sync(data_source, parameter_values, query_text, max_age=0):
         else:
             abort(503, message="Unable to get result from the database.")
         return None
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
 def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
     # adds a job if max_age=0 -> /job and /event calls 
@@ -283,9 +280,6 @@ class QueryResultResource(BaseResource):
         if query_result_id:
             query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, self.current_org)
 <<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
             # this is the table only result - a new one every time execute button is clicked
             # don't update this variable - can't call another func here cause we don't have query_id to update (maybe adhoc)
         else:
@@ -343,19 +337,11 @@ class QueryResultResource(BaseResource):
                 if (not query_result.is_same_query(query_text, query_result.data_source)):
                     # 1. save the query 2. get predefined visual json 3. add json to query object visualizations
                     visualization_resource = VisualizationListResource()
-<<<<<<< HEAD
-	            try:
-                        saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
-                    except Exception as e:
-                        abort(500,e.message)                    # TODO try catch
-                    #saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
-=======
                     # TODO try catch
                     try:
                         saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
                     except Exception as e:
                         abort(500,e.message)
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
             if saved_query_id:
                 query_result_dict['query_id'] = saved_query_id
