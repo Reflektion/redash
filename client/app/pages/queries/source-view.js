@@ -7,7 +7,29 @@ function QuerySourceCtrl(Events, toastr, $controller, $scope, $location, $http, 
   // TODO:
   // This doesn't get inherited. Setting it on this didn't work either (which is weird).
   // Obviously it shouldn't be repeated, but we got bigger fish to fry.
-  const DEFAULT_TAB = 'table';
+
+  // This whole segment deals with having the deafult tab as the visualization
+  let DEFAULT_TAB = 'table';
+  if ('visualizations' in $scope.query) {
+    const visualizations = $scope.query.visualizations;
+
+    let marker = false;        // const table = 'table';
+
+    Object.values(visualizations).forEach((value) => {
+      if (value.type !== 'TABLE') {
+        if (marker !== true) {
+          DEFAULT_TAB = value.id;
+        }
+        marker = true;
+      }
+    });
+  }
+  // console.log(DEFAULT_TAB);
+  $scope.$watch(() =>
+     $location.hash()
+  , (hash) => {
+    $scope.selectedTab = hash || DEFAULT_TAB;
+  });
 
   Events.record('view_source', 'query', $scope.query.id);
 

@@ -29,7 +29,7 @@ export default function (ngModule) {
   return {
     '/': {
       template: '<home-page></home-page>',
-      title: 'Redash',
+      title: 'Reflektion NLP Visualizer',
     },
   };
 }
