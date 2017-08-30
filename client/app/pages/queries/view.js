@@ -17,6 +17,12 @@ function QueryViewCtrl($scope, Events, $route, $routeParams, $location, $window,
 
     $scope.showLog = false;
     $scope.queryResult = $scope.query.getQueryResult(maxAge);
+    // console.log($scope.queryResult);
+    // $scope.queryResult.then($scope.saveQuery()).then((query) => {
+    //    // Because we have a path change, we need to "signal" the next page
+    //  $location.path(query.getSourceLink());
+    // });
+    // return $scope.queryResult;
   }
 
   function getDataSourceId() {
@@ -71,7 +77,7 @@ function QueryViewCtrl($scope, Events, $route, $routeParams, $location, $window,
     getSchema();
   }
 
-  $scope.refreshSchema = () => getSchema(true);
+  $scope.refreshQueries = () => getSchema(true);
 
   function updateDataSources(dataSources) {
     // Filter out data sources the user can't query (or used by current query):
@@ -104,12 +110,17 @@ function QueryViewCtrl($scope, Events, $route, $routeParams, $location, $window,
       return;
     }
 
+    // setTimeout(getQueryResult(0), 0);
+    console.log($scope.query);
     getQueryResult(0);
     $scope.lockButton(true);
     $scope.cancelling = false;
     Events.record('execute', 'query', $scope.query.id);
 
     Notifications.getPermissions();
+
+    // Have to find a way to get to source url and set tab to visual iff getqueryresult() finishes
+    // window.location.replace()
   };
 
 
@@ -282,6 +293,11 @@ function QueryViewCtrl($scope, Events, $route, $routeParams, $location, $window,
     if (status === 'done') {
       $scope.query.latest_query_data_id = $scope.queryResult.getId();
       $scope.query.queryResult = $scope.queryResult;
+      const savedQueryId = $scope.queryResult.getQueryId();
+      if (savedQueryId !== null) {
+        // console.log(savedQueryId);
+        $location.path(`/queries/${savedQueryId}/source`);
+      }
 
       Notifications.showNotification('Redash', `${$scope.query.name} updated.`);
     } else if (status === 'failed') {

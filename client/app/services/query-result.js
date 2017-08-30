@@ -142,6 +142,17 @@ function QueryResultService($resource, $timeout, $q) {
       return id;
     }
 
+    getQueryId() {
+      let queryId = null;
+      if ('query_result' in this) {
+        if ('query_id' in this.query_result) {
+          // console.log(this.query_result.query_id);
+          queryId = this.query_result.query_id;
+        }
+      }
+      return queryId;
+    }
+
     cancelExecution() {
       Job.delete({ id: this.job.id });
     }

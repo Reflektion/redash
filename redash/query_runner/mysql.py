@@ -126,6 +126,8 @@ class Mysql(BaseSQLQueryRunner):
 
         return schema.values()
 
+    #shubham
+    # runs final query - should not be needed to modified
     def run_query(self, query, user):
         import MySQLdb
 

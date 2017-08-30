@@ -73,7 +73,7 @@ class QueryRecentResource(BaseResource):
 
         return queries
 
-
+# called when new query is created
 class QueryListResource(BaseResource):
     @require_permission('create_query')
     def post(self):
@@ -110,12 +110,18 @@ class QueryListResource(BaseResource):
         :>json number runtime: Runtime of last query execution, in seconds (may be null)
         """
         query_def = request.get_json(force=True)
+        query = self.add_query(query_def)
+
+        return query.to_dict()
+
+    def add_query(self, query_def):
         data_source = models.DataSource.get_by_id_and_org(query_def.pop('data_source_id'), self.current_org)
         require_access(data_source.groups, self.current_user, not_view_only)
 
         for field in ['id', 'created_at', 'api_key', 'visualizations', 'latest_query_data', 'last_modified_by']:
             query_def.pop(field, None)
 
+        # plain text query
         query_def['query_text'] = query_def.pop('query')
         query_def['user'] = self.current_user
         query_def['data_source'] = data_source
@@ -130,8 +136,8 @@ class QueryListResource(BaseResource):
             'object_id': query.id,
             'object_type': 'query'
         })
+        return query
 
-        return query.to_dict()
 
     @require_permission('view_query')
     def get(self):
@@ -266,8 +272,12 @@ class QueryRefreshResource(BaseResource):
         Responds with query task details.
         """
         query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
+        # authentication
         require_access(query.groups, self.current_user, not_view_only)
 
         parameter_values = collect_parameters_from_request(request.args)
+
+        #shubham
+        # call module to translate
 
         return run_query(query.data_source, parameter_values, query.query_text, query.id)

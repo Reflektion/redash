@@ -684,6 +684,22 @@ class QueryResult(db.Model, BelongsToOrgMixin):
 
         return query_result, query_ids
 
+    def is_same_query(self,query_text,data_source):
+        #query_hash = utils.gen_query_hash(query)
+
+        # if same query_text already exists don't do the auto save
+        #logging.info("query text is {}".format(query_text))
+        queries = db.session.query(Query).filter(
+            Query.query_text == query_text,
+            Query.data_source == data_source,
+            Query.is_archived == False)
+        query_ids = [q.id for q in queries]
+        logging.info("query_ids is {}".format(query_ids))
+        if len(query_ids) != 0:
+            return True
+        else:
+            return False
+
     def __unicode__(self):
         return u"%d | %s | %s" % (self.id, self.query_hash, self.retrieved_at)
 
@@ -756,6 +772,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     latest_query_data_id = Column(db.Integer, db.ForeignKey("query_results.id"), nullable=True)
     latest_query_data = db.relationship(QueryResult)
     name = Column(db.String(255))
+    #display_name = Column(db.String(255))
     description = Column(db.String(4096), nullable=True)
     query_text = Column("query", db.Text)
     query_hash = Column(db.String(32))
