@@ -33,6 +33,23 @@ If there is a new instance - do an ifconfig to get the local IP address.
 - Execute/Save any of our hardcoded sample queries
 - Add to dashboard. Make it presentable etc..
 
+# List of predefined / hard coded queries for Demo
+
+The map exists in ~/redash/redash/handlers/query_results.py
+
+"show me numbers of millennials who showed interest in auto and rental insurances in last month"
+"show me numbers of millennials who showed interest in home insurances in last month"
+"show me numbers of 40 year and above looking to purchase umbrella insurance"
+"how many usaa families are not engaging in email marketing campaign across california region in 2016"
+"how many usaa families are engaging in monthly email marketing campaign across california region in 2016"
+"which newsletter getting highest engagements in 2016"
+"show me usaa families who has purchased small business insurance across texas"
+"transaction volume of renewal transactions in 2016 across states"
+"how many requests for auto loan came through last year search engine marketing campaigns?"
+"show number of transactions for each product"
+"get number of transactions for Auto Insurance and Rental Insurance grouped by month"
+"show me number of transactions for each state as a map"
+
 # New Instance Setup
 
 For a new instance the process is the same. What is required is the initial setup which includes
@@ -44,5 +61,5 @@ For a new instance the process is the same. What is required is the initial setu
 > cd <redash-home-dir>
 > sudo docker-compose build
 
-You might face some errors. 
+You might face some errors. TODO
 
