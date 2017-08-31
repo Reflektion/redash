@@ -1,0 +1,1920 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.5.6
+-- Dumped by pg_dump version 9.5.6
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: postgres; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE postgres IS 'default administrative connection database';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: access_permissions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE access_permissions (
+    object_type character varying(255) NOT NULL,
+    object_id integer NOT NULL,
+    id integer NOT NULL,
+    access_type character varying(255) NOT NULL,
+    grantor_id integer NOT NULL,
+    grantee_id integer NOT NULL
+);
+
+
+ALTER TABLE access_permissions OWNER TO postgres;
+
+--
+-- Name: access_permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE access_permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE access_permissions_id_seq OWNER TO postgres;
+
+--
+-- Name: access_permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE access_permissions_id_seq OWNED BY access_permissions.id;
+
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE alembic_version OWNER TO postgres;
+
+--
+-- Name: alert_subscriptions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE alert_subscriptions (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    destination_id integer,
+    alert_id integer NOT NULL
+);
+
+
+ALTER TABLE alert_subscriptions OWNER TO postgres;
+
+--
+-- Name: alert_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE alert_subscriptions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE alert_subscriptions_id_seq OWNER TO postgres;
+
+--
+-- Name: alert_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE alert_subscriptions_id_seq OWNED BY alert_subscriptions.id;
+
+
+--
+-- Name: alerts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE alerts (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    query_id integer NOT NULL,
+    user_id integer NOT NULL,
+    options text NOT NULL,
+    state character varying(255) NOT NULL,
+    last_triggered_at timestamp with time zone,
+    rearm integer
+);
+
+
+ALTER TABLE alerts OWNER TO postgres;
+
+--
+-- Name: alerts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE alerts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE alerts_id_seq OWNER TO postgres;
+
+--
+-- Name: alerts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE alerts_id_seq OWNED BY alerts.id;
+
+
+--
+-- Name: api_keys; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE api_keys (
+    object_type character varying(255) NOT NULL,
+    object_id integer NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    api_key character varying(255) NOT NULL,
+    active boolean NOT NULL,
+    created_by_id integer
+);
+
+
+ALTER TABLE api_keys OWNER TO postgres;
+
+--
+-- Name: api_keys_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE api_keys_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE api_keys_id_seq OWNER TO postgres;
+
+--
+-- Name: api_keys_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE api_keys_id_seq OWNED BY api_keys.id;
+
+
+--
+-- Name: changes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE changes (
+    object_type character varying(255) NOT NULL,
+    object_id integer NOT NULL,
+    id integer NOT NULL,
+    object_version integer NOT NULL,
+    user_id integer NOT NULL,
+    change text NOT NULL,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE changes OWNER TO postgres;
+
+--
+-- Name: changes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE changes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE changes_id_seq OWNER TO postgres;
+
+--
+-- Name: changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE changes_id_seq OWNED BY changes.id;
+
+
+--
+-- Name: dashboards; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE dashboards (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    version integer NOT NULL,
+    org_id integer NOT NULL,
+    slug character varying(140) NOT NULL,
+    name character varying(100) NOT NULL,
+    user_id integer NOT NULL,
+    layout text NOT NULL,
+    dashboard_filters_enabled boolean NOT NULL,
+    is_archived boolean NOT NULL,
+    is_draft boolean NOT NULL
+);
+
+
+ALTER TABLE dashboards OWNER TO postgres;
+
+--
+-- Name: dashboards_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE dashboards_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE dashboards_id_seq OWNER TO postgres;
+
+--
+-- Name: dashboards_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE dashboards_id_seq OWNED BY dashboards.id;
+
+
+--
+-- Name: data_source_groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE data_source_groups (
+    id integer NOT NULL,
+    data_source_id integer NOT NULL,
+    group_id integer NOT NULL,
+    view_only boolean NOT NULL
+);
+
+
+ALTER TABLE data_source_groups OWNER TO postgres;
+
+--
+-- Name: data_source_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE data_source_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE data_source_groups_id_seq OWNER TO postgres;
+
+--
+-- Name: data_source_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE data_source_groups_id_seq OWNED BY data_source_groups.id;
+
+
+--
+-- Name: data_sources; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE data_sources (
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    type character varying(255) NOT NULL,
+    options text NOT NULL,
+    queue_name character varying(255) NOT NULL,
+    scheduled_queue_name character varying(255) NOT NULL,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE data_sources OWNER TO postgres;
+
+--
+-- Name: data_sources_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE data_sources_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE data_sources_id_seq OWNER TO postgres;
+
+--
+-- Name: data_sources_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE data_sources_id_seq OWNED BY data_sources.id;
+
+
+--
+-- Name: events; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE events (
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    user_id integer,
+    action character varying(255) NOT NULL,
+    object_type character varying(255) NOT NULL,
+    object_id character varying(255),
+    additional_properties text,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE events OWNER TO postgres;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE events_id_seq OWNER TO postgres;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE events_id_seq OWNED BY events.id;
+
+
+--
+-- Name: groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE groups (
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    type character varying(255) NOT NULL,
+    name character varying(100) NOT NULL,
+    permissions character varying(255)[] NOT NULL,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE groups OWNER TO postgres;
+
+--
+-- Name: groups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE groups_id_seq OWNER TO postgres;
+
+--
+-- Name: groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE groups_id_seq OWNED BY groups.id;
+
+
+--
+-- Name: notification_destinations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE notification_destinations (
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    user_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    type character varying(255) NOT NULL,
+    options text NOT NULL,
+    created_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE notification_destinations OWNER TO postgres;
+
+--
+-- Name: notification_destinations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE notification_destinations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE notification_destinations_id_seq OWNER TO postgres;
+
+--
+-- Name: notification_destinations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE notification_destinations_id_seq OWNED BY notification_destinations.id;
+
+
+--
+-- Name: organizations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE organizations (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    settings text NOT NULL
+);
+
+
+ALTER TABLE organizations OWNER TO postgres;
+
+--
+-- Name: organizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE organizations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE organizations_id_seq OWNER TO postgres;
+
+--
+-- Name: organizations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE organizations_id_seq OWNED BY organizations.id;
+
+
+--
+-- Name: queries; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE queries (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    version integer NOT NULL,
+    org_id integer NOT NULL,
+    data_source_id integer,
+    latest_query_data_id integer,
+    name character varying(255) NOT NULL,
+    description character varying(4096),
+    query text NOT NULL,
+    query_hash character varying(32) NOT NULL,
+    api_key character varying(40) NOT NULL,
+    user_id integer NOT NULL,
+    last_modified_by_id integer,
+    is_archived boolean NOT NULL,
+    is_draft boolean NOT NULL,
+    schedule character varying(10),
+    schedule_failures integer NOT NULL,
+    options text NOT NULL
+);
+
+
+ALTER TABLE queries OWNER TO postgres;
+
+--
+-- Name: queries_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE queries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE queries_id_seq OWNER TO postgres;
+
+--
+-- Name: queries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE queries_id_seq OWNED BY queries.id;
+
+
+--
+-- Name: query_results; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE query_results (
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    data_source_id integer NOT NULL,
+    query_hash character varying(32) NOT NULL,
+    query text NOT NULL,
+    data text NOT NULL,
+    runtime double precision NOT NULL,
+    retrieved_at timestamp with time zone NOT NULL
+);
+
+
+ALTER TABLE query_results OWNER TO postgres;
+
+--
+-- Name: query_results_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE query_results_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE query_results_id_seq OWNER TO postgres;
+
+--
+-- Name: query_results_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE query_results_id_seq OWNED BY query_results.id;
+
+
+--
+-- Name: query_snippets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE query_snippets (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    trigger character varying(255) NOT NULL,
+    description text NOT NULL,
+    user_id integer NOT NULL,
+    snippet text NOT NULL
+);
+
+
+ALTER TABLE query_snippets OWNER TO postgres;
+
+--
+-- Name: query_snippets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE query_snippets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE query_snippets_id_seq OWNER TO postgres;
+
+--
+-- Name: query_snippets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE query_snippets_id_seq OWNED BY query_snippets.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE users (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    org_id integer NOT NULL,
+    name character varying(320) NOT NULL,
+    email character varying(320) NOT NULL,
+    password_hash character varying(128),
+    groups integer[],
+    api_key character varying(40) NOT NULL
+);
+
+
+ALTER TABLE users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- Name: visualizations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE visualizations (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    type character varying(100) NOT NULL,
+    query_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(4096),
+    options text NOT NULL
+);
+
+
+ALTER TABLE visualizations OWNER TO postgres;
+
+--
+-- Name: visualizations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE visualizations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE visualizations_id_seq OWNER TO postgres;
+
+--
+-- Name: visualizations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE visualizations_id_seq OWNED BY visualizations.id;
+
+
+--
+-- Name: widgets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE widgets (
+    updated_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    id integer NOT NULL,
+    visualization_id integer,
+    text text,
+    width integer NOT NULL,
+    options text NOT NULL,
+    dashboard_id integer NOT NULL,
+    type character varying(100),
+    query_id integer
+);
+
+
+ALTER TABLE widgets OWNER TO postgres;
+
+--
+-- Name: widgets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE widgets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE widgets_id_seq OWNER TO postgres;
+
+--
+-- Name: widgets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE widgets_id_seq OWNED BY widgets.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY access_permissions ALTER COLUMN id SET DEFAULT nextval('access_permissions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alert_subscriptions ALTER COLUMN id SET DEFAULT nextval('alert_subscriptions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alerts ALTER COLUMN id SET DEFAULT nextval('alerts_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_keys ALTER COLUMN id SET DEFAULT nextval('api_keys_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY changes ALTER COLUMN id SET DEFAULT nextval('changes_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboards ALTER COLUMN id SET DEFAULT nextval('dashboards_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_source_groups ALTER COLUMN id SET DEFAULT nextval('data_source_groups_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_sources ALTER COLUMN id SET DEFAULT nextval('data_sources_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY groups ALTER COLUMN id SET DEFAULT nextval('groups_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY notification_destinations ALTER COLUMN id SET DEFAULT nextval('notification_destinations_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY organizations ALTER COLUMN id SET DEFAULT nextval('organizations_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries ALTER COLUMN id SET DEFAULT nextval('queries_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_results ALTER COLUMN id SET DEFAULT nextval('query_results_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_snippets ALTER COLUMN id SET DEFAULT nextval('query_snippets_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visualizations ALTER COLUMN id SET DEFAULT nextval('visualizations_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widgets ALTER COLUMN id SET DEFAULT nextval('widgets_id_seq'::regclass);
+
+
+--
+-- Data for Name: access_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY access_permissions (object_type, object_id, id, access_type, grantor_id, grantee_id) FROM stdin;
+\.
+
+
+--
+-- Name: access_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('access_permissions_id_seq', 1, false);
+
+
+--
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY alembic_version (version_num) FROM stdin;
+d1eae8b9893e
+\.
+
+
+--
+-- Data for Name: alert_subscriptions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY alert_subscriptions (updated_at, created_at, id, user_id, destination_id, alert_id) FROM stdin;
+\.
+
+
+--
+-- Name: alert_subscriptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('alert_subscriptions_id_seq', 1, false);
+
+
+--
+-- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY alerts (updated_at, created_at, id, name, query_id, user_id, options, state, last_triggered_at, rearm) FROM stdin;
+\.
+
+
+--
+-- Name: alerts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('alerts_id_seq', 1, false);
+
+
+--
+-- Data for Name: api_keys; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY api_keys (object_type, object_id, updated_at, created_at, id, org_id, api_key, active, created_by_id) FROM stdin;
+\.
+
+
+--
+-- Name: api_keys_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('api_keys_id_seq', 1, false);
+
+
+--
+-- Data for Name: changes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY changes (object_type, object_id, id, object_version, user_id, change, created_at) FROM stdin;
+queries	1	1	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "fe37db8684891902779b000080237d47", "previous": "fe37db8684891902779b000080237d47"}, "query": {"current": "show me numbers of millennials who showed interest in auto and rental insurances in last month", "previous": "show me numbers of millennials who showed interest in auto and rental insurances in last month"}, "api_key": {"current": "fbicLicykB2Fnuo8cSddYigR4sIZshPUTbcVWEZu", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 3, "previous": 3}}	2017-08-31 20:40:47.936753+00
+queries	2	2	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "1297167b205a878b605108cc137f0a7b", "previous": "1297167b205a878b605108cc137f0a7b"}, "query": {"current": "show me numbers of millennials who showed interest in home insurances in last month", "previous": "show me numbers of millennials who showed interest in home insurances in last month"}, "api_key": {"current": "fRhhr6qf8J7fPH6AxWpviZxoto6marCpbJTxUrY0", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 4, "previous": 4}}	2017-08-31 20:48:22.802668+00
+queries	3	3	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "f1fe87430e3a945396c62447b2bbac48", "previous": "f1fe87430e3a945396c62447b2bbac48"}, "query": {"current": "show me numbers of 40 year and above looking to purchase umbrella insurance", "previous": "show me numbers of 40 year and above looking to purchase umbrella insurance"}, "api_key": {"current": "MDr32zScrlyTRkSUVeBPuGHKRduuiegjwXLjfJRb", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 5, "previous": 5}}	2017-08-31 20:48:58.229803+00
+queries	4	4	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": 1}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "58fea92e3879420a191b8400fdffa4fd", "previous": "58fea92e3879420a191b8400fdffa4fd"}, "query": {"current": "how many usaa families are not engaging in email marketing campaign across california region in 2016", "previous": "how many usaa families are not engaging in email marketing campaign across california region in 2016"}, "api_key": {"current": "FuNWWTa6wwk7cSbVut6zucIa06INJtnbfxt8bdL6", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 6, "previous": 6}}	2017-08-31 20:49:45.044909+00
+queries	5	5	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": 1}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "85cc113fba1284aa4458798674e8b6b0", "previous": "85cc113fba1284aa4458798674e8b6b0"}, "query": {"current": "how many usaa families are engaging in monthly email marketing campaign across california region in 2016", "previous": "how many usaa families are engaging in monthly email marketing campaign across california region in 2016"}, "api_key": {"current": "QqIsMsUHA0dcaEyz3qy8kBkMj7DebxasrIBszu0m", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 7, "previous": 7}}	2017-08-31 20:50:23.200712+00
+queries	6	6	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "03b87f9dfad4d69fb203e126e6f45263", "previous": "03b87f9dfad4d69fb203e126e6f45263"}, "query": {"current": "which newsletter getting highest engagements in 2016", "previous": "which newsletter getting highest engagements in 2016"}, "api_key": {"current": "0cLLzsDriWDq0wZkpbGVQ9Jqug91Cglp0mxdrvui", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 8, "previous": 8}}	2017-08-31 20:50:47.904662+00
+queries	7	7	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "83ad40a06bbaff726b2cd0f0b1d6c14c", "previous": "83ad40a06bbaff726b2cd0f0b1d6c14c"}, "query": {"current": "show me usaa families who has purchased small business insurance across texas", "previous": "show me usaa families who has purchased small business insurance across texas"}, "api_key": {"current": "FifAMSrgAdyg7NCNQNMCgHAVgDEx3LLhPT0Lkeaz", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 9, "previous": 9}}	2017-08-31 20:51:18.521969+00
+queries	8	8	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": 1}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "6afbe1c2269f9c05146564448bf604f1", "previous": "6afbe1c2269f9c05146564448bf604f1"}, "query": {"current": "transaction volume of renewal transactions in 2016 across states", "previous": "transaction volume of renewal transactions in 2016 across states"}, "api_key": {"current": "4l3kS68Kx3duEE8IEYK63IfYW3v5RbCKYR2yRDNx", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 10, "previous": 10}}	2017-08-31 20:51:46.886541+00
+queries	9	9	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "ab257b415b77fe6d087d12b69b23753d", "previous": "ab257b415b77fe6d087d12b69b23753d"}, "query": {"current": "how many requests for auto loan came through last year search engine marketing campaigns?", "previous": "how many requests for auto loan came through last year search engine marketing campaigns?"}, "api_key": {"current": "rsNG2AccKF29x1KwKAxupINr1qSVxPk4Fhl4IPJd", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 11, "previous": 11}}	2017-08-31 20:52:24.472799+00
+queries	10	10	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": 1}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "35f66add70bf0b5a72ba7014d39bfc57", "previous": "35f66add70bf0b5a72ba7014d39bfc57"}, "query": {"current": "show number of transactions for each product", "previous": "show number of transactions for each product"}, "api_key": {"current": "b1LX4ga17Ak2Xr25HpKmrguBJRIbBFij7Ke1rsQn", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 12, "previous": 12}}	2017-08-31 20:54:15.76219+00
+queries	11	11	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": 1}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "fc82969aa3e34d36eaed4cfac3e1550a", "previous": "fc82969aa3e34d36eaed4cfac3e1550a"}, "query": {"current": "get number of transactions for Auto Insurance and Rental Insurance grouped by month", "previous": "get number of transactions for Auto Insurance and Rental Insurance grouped by month"}, "api_key": {"current": "6efirCAZqN5TZtxm2XND2lkmHqAOr2hLuBnCtZWo", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 13, "previous": 13}}	2017-08-31 21:00:46.964061+00
+queries	12	12	1	1	{"last_modified_by_id": {"current": 1, "previous": null}, "user_id": {"current": 1, "previous": null}, "description": {"current": null, "previous": null}, "schedule": {"current": null, "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "schedule_failures": {"current": 0, "previous": 0}, "name": {"current": "My New Query", "previous": "My New Query"}, "query_hash": {"current": "d0a90ca9a624567ddd713e3bd845d576", "previous": "d0a90ca9a624567ddd713e3bd845d576"}, "query": {"current": "show me number of transactions for each state as a map", "previous": "show me number of transactions for each state as a map"}, "api_key": {"current": "Q5eJy04qcATFdteiCXMMK6z0yeH7frEMn8lJBUaG", "previous": null}, "is_draft": {"current": true, "previous": true}, "options": {"current": {"parameters": []}, "previous": {"parameters": []}}, "data_source_id": {"current": 1, "previous": null}, "latest_query_data_id": {"current": 14, "previous": 14}}	2017-08-31 21:01:25.569503+00
+dashboards	1	13	1	1	{"user_id": {"current": 1, "previous": null}, "name": {"current": "Insurance Statustics", "previous": null}, "is_archived": {"current": false, "previous": null}, "org_id": {"current": 1, "previous": null}, "layout": {"current": "[]", "previous": "[]"}, "dashboard_filters_enabled": {"current": false, "previous": null}, "is_draft": {"current": true, "previous": true}, "slug": {"current": "insurance-statustics", "previous": null}}	2017-08-31 21:11:32.888669+00
+\.
+
+
+--
+-- Name: changes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('changes_id_seq', 13, true);
+
+
+--
+-- Data for Name: dashboards; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY dashboards (updated_at, created_at, id, version, org_id, slug, name, user_id, layout, dashboard_filters_enabled, is_archived, is_draft) FROM stdin;
+2017-08-31 21:16:06.68744+00	2017-08-31 21:11:32.888669+00	1	8	1	insurance-statustics	Insurance Statistics	1	[[1, 2], [3, 4], [5]]	f	f	f
+\.
+
+
+--
+-- Name: dashboards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('dashboards_id_seq', 1, true);
+
+
+--
+-- Data for Name: data_source_groups; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY data_source_groups (id, data_source_id, group_id, view_only) FROM stdin;
+1	1	2	f
+\.
+
+
+--
+-- Name: data_source_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('data_source_groups_id_seq', 1, true);
+
+
+--
+-- Data for Name: data_sources; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY data_sources (id, org_id, name, type, options, queue_name, scheduled_queue_name, created_at) FROM stdin;
+1	1	datasource	mysql	{"db": "usaa", "host": "10.20.8.81", "passwd": "password1", "port": 3306, "use_ssl": false, "user": "reflektion"}	queries	scheduled_queries	2017-08-31 20:33:16.206763+00
+\.
+
+
+--
+-- Name: data_sources_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('data_sources_id_seq', 1, true);
+
+
+--
+-- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY events (id, org_id, user_id, action, object_type, object_id, additional_properties, created_at) FROM stdin;
+1	1	1	login	redash	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:31:39+00
+2	1	1	view	page	personal_homepage	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:31:41.136+00
+3	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:31:57.995+00
+4	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:31:57.998+00
+5	1	1	view	page	admin/data_source	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:32:00.307+00
+6	1	1	create	datasource	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:16+00
+7	1	1	view	page	admin/data_source	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:16.394+00
+8	1	1	test	datasource	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:17.797+00
+9	1	1	test	datasource	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:27.811+00
+10	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:31.414+00
+11	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:31.415+00
+12	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show number of transactions for each product"}	2017-08-31 20:33:57+00
+13	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:33:57.701+00
+14	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me number of transactions for each state as a map"}	2017-08-31 20:35:50+00
+15	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:35:50.135+00
+16	1	1	view	page	personal_homepage	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:37.349+00
+17	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:41.321+00
+18	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:41.324+00
+19	1	1	view	page	admin/data_sources	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:46.579+00
+20	1	1	view	page	admin/data_source	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:47.986+00
+21	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:50.663+00
+22	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:39:50.663+00
+23	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me numbers of millennials who showed interest in auto and rental insurances in last month"}	2017-08-31 20:40:47+00
+24	1	1	create	query	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:40:48+00
+25	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:40:47.054+00
+26	1	1	view	query	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:40:48.604+00
+27	1	1	view_source	query	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:40:48.604+00
+28	1	1	edit_name	query	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:42:17.816+00
+29	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:18.9+00
+30	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:18.901+00
+31	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me numbers of millennials who showed interest in home insurances in last month"}	2017-08-31 20:48:22+00
+32	1	1	create	query	2	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:23+00
+33	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:22.055+00
+34	1	1	view	query	2	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:23.423+00
+36	1	1	edit_name	query	2	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:38.122+00
+35	1	1	view_source	query	2	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:23.423+00
+37	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:42.745+00
+38	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:42.745+00
+39	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me numbers of 40 year and above looking to purchase umbrella insurance"}	2017-08-31 20:48:57+00
+40	1	1	create	query	3	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:58+00
+41	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:57.558+00
+42	1	1	view	query	3	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:58.874+00
+43	1	1	view_source	query	3	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:48:58.875+00
+44	1	1	edit_name	query	3	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:20.174+00
+45	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:24.344+00
+46	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:24.344+00
+47	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "how many usaa families are not engaging in email marketing campaign across california region in 2016"}	2017-08-31 20:49:44+00
+48	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:43.994+00
+49	1	1	create	query	4	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:45+00
+50	1	1	view	query	4	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:45.801+00
+51	1	1	view_source	query	4	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:49:45.801+00
+52	1	1	edit_name	query	4	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:06.251+00
+53	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:09.956+00
+54	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:09.956+00
+55	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "how many usaa families are engaging in monthly email marketing campaign across california region in 2016"}	2017-08-31 20:50:22+00
+56	1	1	create	query	5	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:23+00
+57	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:22.493+00
+58	1	1	view	query	5	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:23.822+00
+59	1	1	view_source	query	5	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:23.823+00
+60	1	1	edit_name	query	5	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:36.594+00
+61	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:39.071+00
+62	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:39.072+00
+63	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "which newsletter getting highest engagements in 2016"}	2017-08-31 20:50:47+00
+64	1	1	create	query	6	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:48+00
+65	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:47.117+00
+66	1	1	view	query	6	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:48.605+00
+67	1	1	view_source	query	6	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:50:48.606+00
+68	1	1	edit_name	query	6	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:03.792+00
+69	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:08.613+00
+70	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:08.613+00
+71	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me usaa families who has purchased small business insurance across texas"}	2017-08-31 20:51:17+00
+72	1	1	create	query	7	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:18+00
+73	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:17.862+00
+74	1	1	view	query	7	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:19.21+00
+75	1	1	view_source	query	7	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:19.21+00
+76	1	1	edit_name	query	7	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:35.415+00
+77	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:37.795+00
+78	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:37.795+00
+79	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "transaction volume of renewal transactions in 2016 across states"}	2017-08-31 20:51:46+00
+80	1	1	create	query	8	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:47+00
+81	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:46.193+00
+82	1	1	view	query	8	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:47.645+00
+83	1	1	view_source	query	8	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:47.646+00
+84	1	1	edit_name	query	8	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:51:58.866+00
+85	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:20.098+00
+86	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:20.097+00
+87	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "how many requests for auto loan came through last year search engine marketing campaigns?"}	2017-08-31 20:52:23+00
+88	1	1	create	query	9	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:24+00
+89	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:23.751+00
+90	1	1	view	query	9	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:25.11+00
+91	1	1	view_source	query	9	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:25.11+00
+92	1	1	edit_name	query	9	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:40.761+00
+93	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:43.349+00
+94	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:52:43.349+00
+95	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show number of transactions for each product"}	2017-08-31 20:54:15+00
+96	1	1	create	query	10	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:16+00
+97	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:14.983+00
+98	1	1	view_source	query	10	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:16.683+00
+99	1	1	view	query	10	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:16.682+00
+100	1	1	edit_name	query	10	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:30.83+00
+101	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:38.393+00
+102	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 20:54:38.393+00
+103	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "get number of transactions for Auto Insurance and Rental Insurance grouped by month"}	2017-08-31 21:00:46+00
+104	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:00:45.803+00
+105	1	1	create	query	11	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:00:47+00
+106	1	1	view	query	11	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:00:47.693+00
+107	1	1	view_source	query	11	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:00:47.693+00
+108	1	1	edit_name	query	11	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:06.534+00
+109	1	1	view	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:10.732+00
+110	1	1	view_source	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:10.732+00
+111	1	1	execute_query	data_source	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36", "query": "show me number of transactions for each state as a map"}	2017-08-31 21:01:24+00
+112	1	1	create	query	12	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:25+00
+113	1	1	execute	query	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:24.822+00
+114	1	1	view	query	12	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:26.206+00
+115	1	1	view_source	query	12	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:26.206+00
+116	1	1	edit_name	query	12	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:01:39.613+00
+117	1	1	create	dashboard	\N	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:11:32.77+00
+118	1	1	view	dashboard	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:11:33.297+00
+119	1	1	edit	dashboard	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:11:46.847+00
+120	1	1	toggle_published	dashboard	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:11:50.168+00
+121	1	1	view	widget	1	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:16.96+00
+122	1	1	view	query	11	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:16.96+00
+123	1	1	view	visualization	20	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:16.96+00
+124	1	1	view	widget	2	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:57.687+00
+125	1	1	view	query	12	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:57.687+00
+126	1	1	view	visualization	22	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:14:57.687+00
+127	1	1	view	widget	3	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:14.495+00
+128	1	1	view	visualization	18	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:14.495+00
+129	1	1	view	query	10	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:14.495+00
+130	1	1	view	widget	4	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:35.855+00
+131	1	1	view	visualization	14	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:35.855+00
+132	1	1	view	query	8	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:15:35.855+00
+133	1	1	view	query	7	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:16:06.834+00
+134	1	1	view	visualization	12	{"ip": "10.7.10.133", "dashboard": true, "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:16:06.834+00
+135	1	1	view	widget	5	{"ip": "10.7.10.133", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}	2017-08-31 21:16:06.834+00
+\.
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('events_id_seq', 135, true);
+
+
+--
+-- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY groups (id, org_id, type, name, permissions, created_at) FROM stdin;
+1	1	builtin	admin	{admin,super_admin}	2017-08-31 20:31:39.719074+00
+2	1	builtin	default	{create_dashboard,create_query,edit_dashboard,edit_query,view_query,view_source,execute_query,list_users,schedule_query,list_dashboards,list_alerts,list_data_sources}	2017-08-31 20:31:39.719074+00
+\.
+
+
+--
+-- Name: groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('groups_id_seq', 2, true);
+
+
+--
+-- Data for Name: notification_destinations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY notification_destinations (id, org_id, user_id, name, type, options, created_at) FROM stdin;
+\.
+
+
+--
+-- Name: notification_destinations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('notification_destinations_id_seq', 1, false);
+
+
+--
+-- Data for Name: organizations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY organizations (updated_at, created_at, id, name, slug, settings) FROM stdin;
+2017-08-31 20:31:39.719074+00	2017-08-31 20:31:39.719074+00	1	blah	default	{}
+\.
+
+
+--
+-- Name: organizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('organizations_id_seq', 1, true);
+
+
+--
+-- Data for Name: queries; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY queries (updated_at, created_at, id, version, org_id, data_source_id, latest_query_data_id, name, description, query, query_hash, api_key, user_id, last_modified_by_id, is_archived, is_draft, schedule, schedule_failures, options) FROM stdin;
+2017-08-31 20:42:17.856701+00	2017-08-31 20:40:47.936753+00	1	1	1	1	3	Millennials for Auto Insurance	\N	show me numbers of millennials who showed interest in auto and rental insurances in last month	fe37db8684891902779b000080237d47	fbicLicykB2Fnuo8cSddYigR4sIZshPUTbcVWEZu	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:48:38.172178+00	2017-08-31 20:48:22.802668+00	2	1	1	1	4	Millennials for Home Insurance	\N	show me numbers of millennials who showed interest in home insurances in last month	1297167b205a878b605108cc137f0a7b	fRhhr6qf8J7fPH6AxWpviZxoto6marCpbJTxUrY0	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:49:20.214625+00	2017-08-31 20:48:58.229803+00	3	1	1	1	5	40 year olds and above for Umbrella Insurance	\N	show me numbers of 40 year and above looking to purchase umbrella insurance	f1fe87430e3a945396c62447b2bbac48	MDr32zScrlyTRkSUVeBPuGHKRduuiegjwXLjfJRb	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:50:06.289232+00	2017-08-31 20:49:45.044909+00	4	1	1	1	6	Families not engaging in Email Marketing	\N	how many usaa families are not engaging in email marketing campaign across california region in 2016	58fea92e3879420a191b8400fdffa4fd	FuNWWTa6wwk7cSbVut6zucIa06INJtnbfxt8bdL6	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:50:36.630758+00	2017-08-31 20:50:23.200712+00	5	1	1	1	7	Families engaging in Email Marketing	\N	how many usaa families are engaging in monthly email marketing campaign across california region in 2016	85cc113fba1284aa4458798674e8b6b0	QqIsMsUHA0dcaEyz3qy8kBkMj7DebxasrIBszu0m	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:51:03.82771+00	2017-08-31 20:50:47.904662+00	6	1	1	1	8	Highest Engagement Newsletter	\N	which newsletter getting highest engagements in 2016	03b87f9dfad4d69fb203e126e6f45263	0cLLzsDriWDq0wZkpbGVQ9Jqug91Cglp0mxdrvui	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:51:35.452523+00	2017-08-31 20:51:18.521969+00	7	1	1	1	9	Texas families for Business Insurance	\N	show me usaa families who has purchased small business insurance across texas	83ad40a06bbaff726b2cd0f0b1d6c14c	FifAMSrgAdyg7NCNQNMCgHAVgDEx3LLhPT0Lkeaz	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:51:58.909068+00	2017-08-31 20:51:46.886541+00	8	1	1	1	10	Transactions across states	\N	transaction volume of renewal transactions in 2016 across states	6afbe1c2269f9c05146564448bf604f1	4l3kS68Kx3duEE8IEYK63IfYW3v5RbCKYR2yRDNx	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:52:40.798053+00	2017-08-31 20:52:24.472799+00	9	1	1	1	11	Auto Loan requests through search marketing	\N	how many requests for auto loan came through last year search engine marketing campaigns?	ab257b415b77fe6d087d12b69b23753d	rsNG2AccKF29x1KwKAxupINr1qSVxPk4Fhl4IPJd	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 20:54:30.956923+00	2017-08-31 20:54:15.76219+00	10	1	1	1	12	Transaction for each product	\N	show number of transactions for each product	35f66add70bf0b5a72ba7014d39bfc57	b1LX4ga17Ak2Xr25HpKmrguBJRIbBFij7Ke1rsQn	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 21:01:06.575978+00	2017-08-31 21:00:46.964061+00	11	1	1	1	13	Auto and Rental Insurance over time	\N	get number of transactions for Auto Insurance and Rental Insurance grouped by month	fc82969aa3e34d36eaed4cfac3e1550a	6efirCAZqN5TZtxm2XND2lkmHqAOr2hLuBnCtZWo	1	1	f	f	\N	0	{"parameters": []}
+2017-08-31 21:01:39.648324+00	2017-08-31 21:01:25.569503+00	12	1	1	1	14	Transaction Map	\N	show me number of transactions for each state as a map	d0a90ca9a624567ddd713e3bd845d576	Q5eJy04qcATFdteiCXMMK6z0yeH7frEMn8lJBUaG	1	1	f	f	\N	0	{"parameters": []}
+\.
+
+
+--
+-- Name: queries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('queries_id_seq', 12, true);
+
+
+--
+-- Data for Name: query_results; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY query_results (id, org_id, data_source_id, query_hash, query, data, runtime, retrieved_at) FROM stdin;
+1	1	1	5dc21b90fc007ff757a28785bdd31a86	select count(*) as volume,prod_name from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id group by prod_name;	{"rows": [{"volume": 114, "prod_name": "Auto Insurance"}, {"volume": 6, "prod_name": "Checking Account"}, {"volume": 6, "prod_name": "Credit Card"}, {"volume": 10, "prod_name": "Flood Insurance"}, {"volume": 81, "prod_name": "Home Insurance"}, {"volume": 14, "prod_name": "Life Insurance"}, {"volume": 60, "prod_name": "Rental Insurance"}, {"volume": 50, "prod_name": "Small Business Insurance"}, {"volume": 95, "prod_name": "Umbrella Insurance"}], "columns": [{"type": "integer", "friendly_name": "volume", "name": "volume"}, {"type": "string", "friendly_name": "prod_name", "name": "prod_name"}]}	0.0210809707641601562	2017-08-31 20:33:58.240809+00
+2	1	1	1a06d9d8d91e66c3be127e94cf39b965	select count(*) as volume,l.state,l.lat,l.longitude from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id inner join lat_long l on f.state=l.state where marketing='email' group by state;	{"rows": [{"volume": 4, "lat": 32.3, "state": "alabama", "longitude": -86.9}, {"volume": 92, "lat": 37.8, "state": "california", "longitude": -122.4}, {"volume": 8, "lat": 39.5, "state": "colorado", "longitude": -105.8}, {"volume": 5, "lat": 45.2, "state": "maine", "longitude": -69.4}, {"volume": 5, "lat": 42.3, "state": "massachusetts", "longitude": -71.0}, {"volume": 1, "lat": 45.7, "state": "minnesota", "longitude": -94.6}, {"volume": 6, "lat": 40.7, "state": "new york", "longitude": -74.0}, {"volume": 48, "lat": 31.9, "state": "texas", "longitude": -99.9}, {"volume": 4, "lat": 44.5, "state": "vermont", "longitude": -72.5}, {"volume": 9, "lat": 47.7, "state": "washington", "longitude": -120.7}], "columns": [{"type": "integer", "friendly_name": "volume", "name": "volume"}, {"type": "string", "friendly_name": "state", "name": "state"}, {"type": "float", "friendly_name": "lat", "name": "lat"}, {"type": "float", "friendly_name": "longitude", "name": "longitude"}]}	0.0203249454498291016	2017-08-31 20:35:50.676082+00
+3	1	1	a6815d9bf660098ba7a4c57790171db1	select count(*) from (select f.family_id from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Rental Insurance' or prod_name='Auto Insurance' and act_date > '2017-06-01' and dob > '1990-01-01' group by f.family_id having count(distinct p.prod_id)>1) as A;	{"rows": [{"count(*)": 41}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0482790470123291016	2017-08-31 20:40:47.547387+00
+4	1	1	6eb65b54ad99e2f9974c91a87ad46a31	select count(*) from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Home Insurance' and act_date > '2017-06-01' and dob > '1990-01-01';	{"rows": [{"count(*)": 54}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0504250526428222656	2017-08-31 20:48:22.402122+00
+5	1	1	dca03836c0068afa4d42c166826b6783	select count(*) from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Umbrella Insurance' and dob < '1977-01-01';	{"rows": [{"count(*)": 87}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0197129249572753906	2017-08-31 20:48:57.878212+00
+6	1	1	f3367f84a80728609945f5a211f4aecb	select count(*) from families where family_id not in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and marketing='email') and state='california';	{"rows": [{"count(*)": 360}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0351381301879882812	2017-08-31 20:49:44.656932+00
+7	1	1	d14f72a53d928bbe924915e11e1dab23	select count(*) from families where family_id in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and marketing='email') and state='california';	{"rows": [{"count(*)": 42}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0212528705596923828	2017-08-31 20:50:22.887147+00
+8	1	1	ea197d47e294c2b917fdba41e8eaa196	select prod_name from finance_products where prod_id=(select prod_id from transactions group by prod_id order by count(*) desc limit 1);	{"rows": [{"prod_name": "Auto Insurance"}], "columns": [{"type": "string", "friendly_name": "prod_name", "name": "prod_name"}]}	0.0185780525207519531	2017-08-31 20:50:47.514676+00
+9	1	1	ae24e7dca8e7ab481f2292eafe0a7911	select f.family_id, f.last_name from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Small Business Insurance' and state='texas' and activity='purchased';	{"rows": [{"family_id": 15, "last_name": "Nooteboom"}, {"family_id": 16, "last_name": "Cappelletti"}, {"family_id": 23, "last_name": "Montemayor"}, {"family_id": 32, "last_name": "Reistad"}, {"family_id": 33, "last_name": "Merlo"}, {"family_id": 35, "last_name": "Chappelet"}, {"family_id": 41, "last_name": "Lenart"}, {"family_id": 55, "last_name": "Dredge"}, {"family_id": 61, "last_name": "Herber"}, {"family_id": 79, "last_name": "Gils"}, {"family_id": 94, "last_name": "Ossenbruggen"}, {"family_id": 105, "last_name": "Piveteau"}, {"family_id": 140, "last_name": "Auria"}, {"family_id": 162, "last_name": "Eugenio"}, {"family_id": 173, "last_name": "Mahmud"}, {"family_id": 177, "last_name": "Iisaka"}, {"family_id": 184, "last_name": "Lowrie"}, {"family_id": 188, "last_name": "Muchinsky"}, {"family_id": 190, "last_name": "Fairtlough"}, {"family_id": 242, "last_name": "Ozeri"}, {"family_id": 260, "last_name": "Suomi"}, {"family_id": 316, "last_name": "Schwaller"}, {"family_id": 338, "last_name": "Ranai"}, {"family_id": 340, "last_name": "Laventhal"}, {"family_id": 366, "last_name": "Piazza"}, {"family_id": 396, "last_name": "Rahier"}, {"family_id": 442, "last_name": "Unno"}, {"family_id": 447, "last_name": "Yavatkar"}, {"family_id": 463, "last_name": "Zaiane"}, {"family_id": 464, "last_name": "Maginnis"}, {"family_id": 486, "last_name": "Kossowski"}, {"family_id": 499, "last_name": "Luft"}, {"family_id": 504, "last_name": "Varker"}], "columns": [{"type": "integer", "friendly_name": "family_id", "name": "family_id"}, {"type": "string", "friendly_name": "last_name", "name": "last_name"}]}	0.0200190544128417969	2017-08-31 20:51:18.180704+00
+10	1	1	49ea573b948e54886a461ed7be15b765	select state,count(*) from families where family_id in (select family_id from transactions where act_date > '2016-01-01' and act_date < '2016-12-31' and activity='renewed') group by state;	{"rows": [{"state": "alabama", "count(*)": 7}, {"state": "california", "count(*)": 32}, {"state": "colorado", "count(*)": 8}, {"state": "florida", "count(*)": 6}, {"state": "maine", "count(*)": 9}, {"state": "massachusetts", "count(*)": 8}, {"state": "minnesota", "count(*)": 4}, {"state": "new york", "count(*)": 6}, {"state": "texas", "count(*)": 21}, {"state": "vermont", "count(*)": 8}, {"state": "washington", "count(*)": 10}], "columns": [{"type": "string", "friendly_name": "state", "name": "state"}, {"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0225210189819335938	2017-08-31 20:51:46.510419+00
+11	1	1	400f5d3772362ab325650fe5b21f48e8	select count(*) from transactions where marketing='search' and prod_id=(select prod_id from finance_products where prod_name='Auto Insurance');	{"rows": [{"count(*)": 74}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}]}	0.0177690982818603516	2017-08-31 20:52:24.121402+00
+12	1	1	5dc21b90fc007ff757a28785bdd31a86	select count(*) as volume,prod_name from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id group by prod_name;	{"rows": [{"volume": 114, "prod_name": "Auto Insurance"}, {"volume": 6, "prod_name": "Checking Account"}, {"volume": 6, "prod_name": "Credit Card"}, {"volume": 10, "prod_name": "Flood Insurance"}, {"volume": 81, "prod_name": "Home Insurance"}, {"volume": 14, "prod_name": "Life Insurance"}, {"volume": 60, "prod_name": "Rental Insurance"}, {"volume": 50, "prod_name": "Small Business Insurance"}, {"volume": 95, "prod_name": "Umbrella Insurance"}], "columns": [{"type": "integer", "friendly_name": "volume", "name": "volume"}, {"type": "string", "friendly_name": "prod_name", "name": "prod_name"}]}	0.119948148727416992	2017-08-31 20:54:15.538506+00
+13	1	1	a5ec2748a24af9aa44158a39f7094752	select count(*),prod_name,DATE_FORMAT(act_date, "%y-%m") as month_date from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Auto Insurance' or prod_name='Rental Insurance' group by month_date,prod_name;	{"rows": [{"count(*)": 5, "prod_name": "Auto Insurance", "month_date": "16-01"}, {"count(*)": 4, "prod_name": "Rental Insurance", "month_date": "16-01"}, {"count(*)": 2, "prod_name": "Auto Insurance", "month_date": "16-02"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-02"}, {"count(*)": 10, "prod_name": "Auto Insurance", "month_date": "16-03"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-03"}, {"count(*)": 3, "prod_name": "Auto Insurance", "month_date": "16-04"}, {"count(*)": 4, "prod_name": "Rental Insurance", "month_date": "16-04"}, {"count(*)": 5, "prod_name": "Auto Insurance", "month_date": "16-05"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-05"}, {"count(*)": 7, "prod_name": "Auto Insurance", "month_date": "16-06"}, {"count(*)": 2, "prod_name": "Rental Insurance", "month_date": "16-06"}, {"count(*)": 8, "prod_name": "Auto Insurance", "month_date": "16-07"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-07"}, {"count(*)": 6, "prod_name": "Auto Insurance", "month_date": "16-08"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-08"}, {"count(*)": 8, "prod_name": "Auto Insurance", "month_date": "16-09"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-09"}, {"count(*)": 3, "prod_name": "Auto Insurance", "month_date": "16-10"}, {"count(*)": 8, "prod_name": "Auto Insurance", "month_date": "16-11"}, {"count(*)": 7, "prod_name": "Auto Insurance", "month_date": "16-12"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "16-12"}, {"count(*)": 1, "prod_name": "Rental Insurance", "month_date": "17-03"}, {"count(*)": 42, "prod_name": "Auto Insurance", "month_date": "17-06"}, {"count(*)": 42, "prod_name": "Rental Insurance", "month_date": "17-06"}], "columns": [{"type": "integer", "friendly_name": "count(*)", "name": "count(*)"}, {"type": "string", "friendly_name": "prod_name", "name": "prod_name"}, {"type": "string", "friendly_name": "month_date", "name": "month_date"}]}	0.0485439300537109375	2017-08-31 21:00:46.620006+00
+14	1	1	1a06d9d8d91e66c3be127e94cf39b965	select count(*) as volume,l.state,l.lat,l.longitude from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id inner join lat_long l on f.state=l.state where marketing='email' group by state;	{"rows": [{"volume": 4, "lat": 32.3, "state": "alabama", "longitude": -86.9}, {"volume": 92, "lat": 37.8, "state": "california", "longitude": -122.4}, {"volume": 8, "lat": 39.5, "state": "colorado", "longitude": -105.8}, {"volume": 5, "lat": 45.2, "state": "maine", "longitude": -69.4}, {"volume": 5, "lat": 42.3, "state": "massachusetts", "longitude": -71.0}, {"volume": 1, "lat": 45.7, "state": "minnesota", "longitude": -94.6}, {"volume": 6, "lat": 40.7, "state": "new york", "longitude": -74.0}, {"volume": 48, "lat": 31.9, "state": "texas", "longitude": -99.9}, {"volume": 4, "lat": 44.5, "state": "vermont", "longitude": -72.5}, {"volume": 9, "lat": 47.7, "state": "washington", "longitude": -120.7}], "columns": [{"type": "integer", "friendly_name": "volume", "name": "volume"}, {"type": "string", "friendly_name": "state", "name": "state"}, {"type": "float", "friendly_name": "lat", "name": "lat"}, {"type": "float", "friendly_name": "longitude", "name": "longitude"}]}	0.0342988967895507812	2017-08-31 21:01:25.204305+00
+\.
+
+
+--
+-- Name: query_results_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('query_results_id_seq', 14, true);
+
+
+--
+-- Data for Name: query_snippets; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY query_snippets (updated_at, created_at, id, org_id, trigger, description, user_id, snippet) FROM stdin;
+\.
+
+
+--
+-- Name: query_snippets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('query_snippets_id_seq', 1, false);
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY users (updated_at, created_at, id, org_id, name, email, password_hash, groups, api_key) FROM stdin;
+2017-08-31 20:31:39.873516+00	2017-08-31 20:31:39.873516+00	1	1	sm	sm@email.com	$6$rounds=91279$l41wNY8xZit7ZaYt$pb/wu3TFkfVpPJYDL8cLh1wVGhHXd3LUrcWod.VjAzMkGo0syUA6e.nd0BHQeT9M7Y0KLkGnA4/8DUG5Y6ega0	{1,2}	Sxlq8XlVve2uQY3veVDThqVgoxF0pu2Tgiap0FzZ
+\.
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('users_id_seq', 1, true);
+
+
+--
+-- Data for Name: visualizations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY visualizations (updated_at, created_at, id, type, query_id, name, description, options) FROM stdin;
+2017-08-31 20:40:47.936753+00	2017-08-31 20:40:47.936753+00	1	TABLE	1	Table		{}
+2017-08-31 20:40:48.217992+00	2017-08-31 20:40:48.217992+00	2	COUNTER	1	Number of millennials		{"counterColName": "count(*)", "countRow": false, "targetRowNumber": 4, "rowNumber": 1, "targetColName": null}
+2017-08-31 20:48:22.802668+00	2017-08-31 20:48:22.802668+00	3	TABLE	2	Table		{}
+2017-08-31 20:48:23.066137+00	2017-08-31 20:48:23.066137+00	4	COUNTER	2	Number of millennials		{"counterColName": "count(*)", "countRow": false, "targetRowNumber": 4, "rowNumber": 1, "targetColName": null}
+2017-08-31 20:48:58.229803+00	2017-08-31 20:48:58.229803+00	5	TABLE	3	Table		{}
+2017-08-31 20:48:58.494813+00	2017-08-31 20:48:58.494813+00	6	COUNTER	3	Numbers of 40 year and above		{"counterColName": "count(*)", "countRow": false, "targetRowNumber": 4, "rowNumber": 1, "targetColName": null}
+2017-08-31 20:49:45.044909+00	2017-08-31 20:49:45.044909+00	7	TABLE	4	Table		{}
+2017-08-31 20:49:45.422954+00	2017-08-31 20:49:45.422954+00	8	COUNTER	4	Number of Families		{"counterColName": "count(*)", "targetRowNumber": 1, "rowNumber": 1}
+2017-08-31 20:50:23.200712+00	2017-08-31 20:50:23.200712+00	9	TABLE	5	Table		{}
+2017-08-31 20:50:23.46455+00	2017-08-31 20:50:23.46455+00	10	COUNTER	5	Number of Families		{"counterColName": "count(*)", "targetRowNumber": 1, "rowNumber": 1}
+2017-08-31 20:50:47.904662+00	2017-08-31 20:50:47.904662+00	11	TABLE	6	Table		{}
+2017-08-31 20:51:18.521969+00	2017-08-31 20:51:18.521969+00	12	TABLE	7	Table		{}
+2017-08-31 20:51:46.886541+00	2017-08-31 20:51:46.886541+00	13	TABLE	8	Table		{}
+2017-08-31 20:51:47.18665+00	2017-08-31 20:51:47.18665+00	14	CHART	8	Chart		{"error_y": {"visible": true, "type": "data"}, "yAxis": [{"type": "linear"}, {"type": "linear", "opposite": true}], "series": {"stacking": "normal", "error_y": {"visible": true, "type": "data"}}, "globalSeriesType": "column", "sortX": true, "seriesOptions": {"count(*)": {"zIndex": 0, "index": 0, "type": "column", "yAxis": 0}}, "xAxis": {"labels": {"enabled": true}, "type": "category"}, "columnMapping": {"state": "x", "count(*)": "y"}, "bottomMargin": 50, "customCode": "// Available variables are x, ys, element, and Plotly\\n// Type console.log(x, ys); for more info about x and ys\\n// To plot your graph call Plotly.plot(element, ...)\\n// Plotly examples and docs: https://plot.ly/javascript/", "legend": {"enabled": true}}
+2017-08-31 20:52:24.472799+00	2017-08-31 20:52:24.472799+00	15	TABLE	9	Table		{}
+2017-08-31 20:52:24.737776+00	2017-08-31 20:52:24.737776+00	16	COUNTER	9	Auto Loan Requests		{"counterColName": "count(*)", "targetRowNumber": 1, "rowNumber": 1}
+2017-08-31 20:54:15.76219+00	2017-08-31 20:54:15.76219+00	17	TABLE	10	Table		{}
+2017-08-31 20:54:16.319382+00	2017-08-31 20:54:16.319382+00	18	CHART	10	Chart		{"error_y": {"visible": true, "type": "data"}, "yAxis": [{"type": "linear"}, {"type": "linear", "opposite": true}], "series": {"stacking": null, "error_y": {"visible": true, "type": "data"}}, "globalSeriesType": "pie", "sortX": true, "seriesOptions": {"volume": {"zIndex": 0, "index": 0, "type": "pie", "yAxis": 0}}, "xAxis": {"labels": {"enabled": true}, "type": "datetime"}, "columnMapping": {"volume": "y", "prod_name": "x"}, "bottomMargin": 50, "customCode": "// Available variables are x, ys, element, and Plotly\\n// Type console.log(x, ys); for more info about x and ys\\n// To plot your graph call Plotly.plot(element, ...)\\n// Plotly examples and docs: https://plot.ly/javascript/", "legend": {"enabled": true}}
+2017-08-31 21:00:46.964061+00	2017-08-31 21:00:46.964061+00	19	TABLE	11	Table		{}
+2017-08-31 21:00:47.26698+00	2017-08-31 21:00:47.26698+00	20	CHART	11	Chart		{"error_y": {"visible": true, "type": "data"}, "yAxis": [{"type": "linear", "title": {"text": "Transaction Volume"}}, {"type": "linear", "opposite": true}], "series": {"stacking": null, "error_y": {"visible": true, "type": "data"}}, "globalSeriesType": "area", "sortX": true, "seriesOptions": {"Rental Insurance": {"zIndex": 1, "index": 0, "type": "area", "color": "#4572A7", "yAxis": 0}, "Auto Insurance": {"zIndex": 0, "index": 0, "type": "area", "color": "#53B400", "yAxis": 0}}, "xAxis": {"labels": {"enabled": true}, "type": "datetime", "title": {"text": "Time"}}, "columnMapping": {"count(*)": "y", "prod_name": "series", "month_date": "x"}, "bottomMargin": 50, "customCode": "// Available variables are x, ys, element, and Plotly\\n// Type console.log(x, ys); for more info about x and ys\\n// To plot your graph call Plotly.plot(element, ...)\\n// Plotly examples and docs: https://plot.ly/javascript/", "legend": {"enabled": true}}
+2017-08-31 21:01:25.569503+00	2017-08-31 21:01:25.569503+00	21	TABLE	12	Table		{}
+2017-08-31 21:01:25.831754+00	2017-08-31 21:01:25.831754+00	22	MAP	12	Map		{"mapTileUrl": "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", "clusterMarkers": false, "bounds": {"_southWest": {"lat": 21.69826549685252, "lng": -124.98046875000001}, "_northEast": {"lat": 55.02802211299252, "lng": -67.50000000000001}}, "height": 500, "groups": {"vermont": {"color": "#e377c2"}, "colorado": {"color": "#1f77b4"}, "washington": {"color": "#7f7f7f"}, "minnesota": {"color": "#d62728"}, "new york": {"color": "#9467bd"}, "california": {"color": "#17becf"}, "massachusetts": {"color": "#2ca02c"}, "alabama": {"color": "#bcbd22"}, "maine": {"color": "#ff7f0e"}, "texas": {"color": "#8c564b"}}, "latColName": "lat", "lonColName": "longitude", "classify": "state"}
+\.
+
+
+--
+-- Name: visualizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('visualizations_id_seq', 22, true);
+
+
+--
+-- Data for Name: widgets; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widgets (updated_at, created_at, id, visualization_id, text, width, options, dashboard_id, type, query_id) FROM stdin;
+2017-08-31 21:14:16.796102+00	2017-08-31 21:14:16.796102+00	1	20		1	{}	1	\N	\N
+2017-08-31 21:14:57.525259+00	2017-08-31 21:14:57.525259+00	2	22		1	{}	1	\N	\N
+2017-08-31 21:15:14.297048+00	2017-08-31 21:15:14.297048+00	3	18		1	{}	1	\N	\N
+2017-08-31 21:15:35.683216+00	2017-08-31 21:15:35.683216+00	4	14		1	{}	1	\N	\N
+2017-08-31 21:16:06.665081+00	2017-08-31 21:16:06.665081+00	5	12		1	{}	1	\N	\N
+\.
+
+
+--
+-- Name: widgets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('widgets_id_seq', 5, true);
+
+
+--
+-- Name: access_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY access_permissions
+    ADD CONSTRAINT access_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
+
+
+--
+-- Name: alert_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alert_subscriptions
+    ADD CONSTRAINT alert_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alerts
+    ADD CONSTRAINT alerts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: api_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_keys
+    ADD CONSTRAINT api_keys_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: changes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY changes
+    ADD CONSTRAINT changes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dashboards_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT dashboards_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: data_source_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_source_groups
+    ADD CONSTRAINT data_source_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: data_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_sources
+    ADD CONSTRAINT data_sources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notification_destinations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY notification_destinations
+    ADD CONSTRAINT notification_destinations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY organizations
+    ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY organizations
+    ADD CONSTRAINT organizations_slug_key UNIQUE (slug);
+
+
+--
+-- Name: queries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: query_results_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_results
+    ADD CONSTRAINT query_results_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: query_snippets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_snippets
+    ADD CONSTRAINT query_snippets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: query_snippets_trigger_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_snippets
+    ADD CONSTRAINT query_snippets_trigger_key UNIQUE (trigger);
+
+
+--
+-- Name: users_api_key_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_api_key_key UNIQUE (api_key);
+
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: visualizations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visualizations
+    ADD CONSTRAINT visualizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: widgets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widgets
+    ADD CONSTRAINT widgets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: alert_subscriptions_destination_id_alert_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX alert_subscriptions_destination_id_alert_id ON alert_subscriptions USING btree (destination_id, alert_id);
+
+
+--
+-- Name: api_keys_object_type_object_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX api_keys_object_type_object_id ON api_keys USING btree (object_type, object_id);
+
+
+--
+-- Name: data_sources_org_id_name; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX data_sources_org_id_name ON data_sources USING btree (org_id, name);
+
+
+--
+-- Name: ix_api_keys_api_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_api_keys_api_key ON api_keys USING btree (api_key);
+
+
+--
+-- Name: ix_dashboards_is_archived; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_dashboards_is_archived ON dashboards USING btree (is_archived);
+
+
+--
+-- Name: ix_dashboards_is_draft; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_dashboards_is_draft ON dashboards USING btree (is_draft);
+
+
+--
+-- Name: ix_dashboards_slug; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_dashboards_slug ON dashboards USING btree (slug);
+
+
+--
+-- Name: ix_queries_is_archived; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_queries_is_archived ON queries USING btree (is_archived);
+
+
+--
+-- Name: ix_queries_is_draft; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_queries_is_draft ON queries USING btree (is_draft);
+
+
+--
+-- Name: ix_query_results_query_hash; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_query_results_query_hash ON query_results USING btree (query_hash);
+
+
+--
+-- Name: ix_widgets_dashboard_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_widgets_dashboard_id ON widgets USING btree (dashboard_id);
+
+
+--
+-- Name: notification_destinations_org_id_name; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX notification_destinations_org_id_name ON notification_destinations USING btree (org_id, name);
+
+
+--
+-- Name: users_org_id_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX users_org_id_email ON users USING btree (org_id, email);
+
+
+--
+-- Name: access_permissions_grantee_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY access_permissions
+    ADD CONSTRAINT access_permissions_grantee_id_fkey FOREIGN KEY (grantee_id) REFERENCES users(id);
+
+
+--
+-- Name: access_permissions_grantor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY access_permissions
+    ADD CONSTRAINT access_permissions_grantor_id_fkey FOREIGN KEY (grantor_id) REFERENCES users(id);
+
+
+--
+-- Name: alert_subscriptions_alert_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alert_subscriptions
+    ADD CONSTRAINT alert_subscriptions_alert_id_fkey FOREIGN KEY (alert_id) REFERENCES alerts(id);
+
+
+--
+-- Name: alert_subscriptions_destination_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alert_subscriptions
+    ADD CONSTRAINT alert_subscriptions_destination_id_fkey FOREIGN KEY (destination_id) REFERENCES notification_destinations(id);
+
+
+--
+-- Name: alert_subscriptions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alert_subscriptions
+    ADD CONSTRAINT alert_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: alerts_query_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alerts
+    ADD CONSTRAINT alerts_query_id_fkey FOREIGN KEY (query_id) REFERENCES queries(id);
+
+
+--
+-- Name: alerts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY alerts
+    ADD CONSTRAINT alerts_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: api_keys_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_keys
+    ADD CONSTRAINT api_keys_created_by_id_fkey FOREIGN KEY (created_by_id) REFERENCES users(id);
+
+
+--
+-- Name: api_keys_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY api_keys
+    ADD CONSTRAINT api_keys_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: changes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY changes
+    ADD CONSTRAINT changes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: dashboards_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT dashboards_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: dashboards_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboards
+    ADD CONSTRAINT dashboards_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: data_source_groups_data_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_source_groups
+    ADD CONSTRAINT data_source_groups_data_source_id_fkey FOREIGN KEY (data_source_id) REFERENCES data_sources(id);
+
+
+--
+-- Name: data_source_groups_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_source_groups
+    ADD CONSTRAINT data_source_groups_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id);
+
+
+--
+-- Name: data_sources_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY data_sources
+    ADD CONSTRAINT data_sources_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: events_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: groups_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT groups_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: notification_destinations_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY notification_destinations
+    ADD CONSTRAINT notification_destinations_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: notification_destinations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY notification_destinations
+    ADD CONSTRAINT notification_destinations_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: queries_data_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_data_source_id_fkey FOREIGN KEY (data_source_id) REFERENCES data_sources(id);
+
+
+--
+-- Name: queries_last_modified_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_last_modified_by_id_fkey FOREIGN KEY (last_modified_by_id) REFERENCES users(id);
+
+
+--
+-- Name: queries_latest_query_data_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_latest_query_data_id_fkey FOREIGN KEY (latest_query_data_id) REFERENCES query_results(id);
+
+
+--
+-- Name: queries_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: queries_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY queries
+    ADD CONSTRAINT queries_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: query_results_data_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_results
+    ADD CONSTRAINT query_results_data_source_id_fkey FOREIGN KEY (data_source_id) REFERENCES data_sources(id);
+
+
+--
+-- Name: query_results_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_results
+    ADD CONSTRAINT query_results_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: query_snippets_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_snippets
+    ADD CONSTRAINT query_snippets_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: query_snippets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY query_snippets
+    ADD CONSTRAINT query_snippets_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: users_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_org_id_fkey FOREIGN KEY (org_id) REFERENCES organizations(id);
+
+
+--
+-- Name: visualizations_query_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visualizations
+    ADD CONSTRAINT visualizations_query_id_fkey FOREIGN KEY (query_id) REFERENCES queries(id);
+
+
+--
+-- Name: widgets_dashboard_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widgets
+    ADD CONSTRAINT widgets_dashboard_id_fkey FOREIGN KEY (dashboard_id) REFERENCES dashboards(id);
+
+
+--
+-- Name: widgets_visualization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widgets
+    ADD CONSTRAINT widgets_visualization_id_fkey FOREIGN KEY (visualization_id) REFERENCES visualizations(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
