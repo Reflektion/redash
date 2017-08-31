@@ -34,3 +34,15 @@ If there is a new instance - do an ifconfig to get the local IP address.
 - Add to dashboard. Make it presentable etc..
 
 # New Instance Setup
+
+For a new instance the process is the same. What is required is the initial setup which includes
+- Building the containers .  and
+- Creating a local DB server to act as a datasource: This can be done in any standard way: install MySQL, create tables etc:
+
+## How to build containers..
+
+> cd <redash-home-dir>
+> sudo docker-compose build
+
+You might face some errors. 
+
