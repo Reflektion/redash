@@ -45,7 +45,7 @@ class QueriesListCtrl {
 
     this.tabs = [
       { name: 'My Queries', path: 'queries/my' },
-      { path: 'queries', name: 'All Queries', isActive: path => path === '/queries' },
+      { path: 'queries', name: 'Top Queries', isActive: path => path === '/queries' },
     ];
   }
 }
