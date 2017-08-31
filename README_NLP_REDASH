@@ -27,8 +27,10 @@ Now, give a dummy username/passwd to login at : http://dev-east-rfk-data-nlp-dem
 Use the UI and the front end to 
 - Connect to the Datasource / MySQL runnng inside the instance:
 
-Local IP address (this needs be given, 'localhost' does not work): 10.20.8.81 
-If there is a new instance - do an ifconfig to get the local IP address.
+Local IP address (the IP needs be given, 'localhost' does not work): 10.20.8.81 
+[ If there is a new instance - do an ifconfig to get the local IP address.]
+Username: reflektion
+Password: password1
 
 - Execute/Save any of our hardcoded sample queries
 - Add to dashboard. Make it presentable etc..
@@ -55,8 +57,11 @@ The map exists in ~/redash/redash/handlers/query_results.py
 For a new instance the process is the same. What is required is the initial setup which includes
 - Building the containers .  and
 - Creating a local DB server to act as a datasource: This can be done in any standard way: install MySQL, create tables etc:
+  As mentioned earlier, use ifconfig to get the local IP
+  Use IP/usernmae/passwd to add datasource.
+  
 
-## How to build containers..
+## Now How to build containers and setup  ...
 
 > cd <redash-home-dir>
 > sudo docker-compose build
