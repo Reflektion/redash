@@ -1,0 +1,11 @@
+INSERT INTO `lat_long` VALUES 
+('alabama',32.3,-86.9),
+('california',37.8,-122.4),
+('colorado',39.5,-105.8),
+('maine',45.2,-69.4),
+('massachusetts',42.3,-71.0),
+('minnesota',45.7,-94.6),
+('new york',40.7,-74.0),
+('texas',31.9,-99.9),
+('vermont',44.5,-72.5),
+('washington',47.7,-120.7);

@@ -1,0 +1,70 @@
+
+# For the existing Demo instance 
+For the existing Demo instance which is being used as of August 2017 : http://dev-east-rfk-data-nlp-demo-01-c01.dev.rfksrv.com:8080/
+The 'container build' process (installing libraries and pulling images) are already done.
+
+In case the Docker-containers go down or need to be restarted:
+
+1. 
+
+> cd ~/redash/
+> sudo docker-compose create
+> sudo docker-compose start
+> sudo docker-compose up
+
+Leave this process running (we can use screens for remote ssh). We can see the logs in the terminal as well
+
+2. In a separate process
+
+> cd ~/redash/
+> sudo bash run.sh
+
+Again, leave this process running. This creates the front-end at port 8080
+
+3.
+Now, give a dummy username/passwd to login at : http://dev-east-rfk-data-nlp-demo-01-c01.dev.rfksrv.com:8080/
+
+Use the UI and the front end to 
+- Connect to the Datasource / MySQL runnng inside the instance:
+
+Local IP address (the IP needs be given, 'localhost' does not work): 10.20.8.81 
+[ If there is a new instance - do an ifconfig to get the local IP address.]
+Username: reflektion
+Password: password1
+
+- Execute/Save any of our hardcoded sample queries
+- Add to dashboard. Make it presentable etc..
+
+# List of predefined / hard coded queries for Demo
+
+The map exists in ~/redash/redash/handlers/query_results.py
+
+"show me numbers of millennials who showed interest in auto and rental insurances in last month"
+"show me numbers of millennials who showed interest in home insurances in last month"
+"show me numbers of 40 year and above looking to purchase umbrella insurance"
+"how many usaa families are not engaging in email marketing campaign across california region in 2016"
+"how many usaa families are engaging in monthly email marketing campaign across california region in 2016"
+"which newsletter getting highest engagements in 2016"
+"show me usaa families who has purchased small business insurance across texas"
+"transaction volume of renewal transactions in 2016 across states"
+"how many requests for auto loan came through last year search engine marketing campaigns?"
+"show number of transactions for each product"
+"get number of transactions for Auto Insurance and Rental Insurance grouped by month"
+"show me number of transactions for each state as a map"
+
+# New Instance Setup
+
+For a new instance the process is the same. What is required is the initial setup which includes
+- Building the containers .  and
+- Creating a local DB server to act as a datasource: This can be done in any standard way: install MySQL, create tables etc:
+  As mentioned earlier, use ifconfig to get the local IP
+  Use IP/usernmae/passwd to add datasource.
+  
+
+## Now How to build containers and setup  ...
+
+> cd <redash-home-dir>
+> sudo docker-compose build
+
+You might face some errors. TODO
+

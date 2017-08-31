@@ -1,0 +1,10 @@
+INSERT INTO `finance_products` VALUES 
+(1,'Auto Insurance'),
+(2,'Rental Insurance'),
+(3,'Home Insurance'),
+(4,'Small Business Insurance'),
+(5,'Credit Card'),
+(6,'Checking Account'),
+(7,'Umbrella Insurance'),
+(8,'Flood Insurance'),
+(9,'Life Insurance');

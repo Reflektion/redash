@@ -96,9 +96,6 @@ def translate(ip_string):
     else:
         return 'NA'
 
-<<<<<<< HEAD
-=======
-
 #
 # Run a parameterized query synchronously and return the result
 # DISCLAIMER: Temporary solution to support parameters in queries. Should be
@@ -147,7 +144,6 @@ def run_query_sync(data_source, parameter_values, query_text, max_age=0):
         else:
             abort(503, message="Unable to get result from the database.")
         return None
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
 def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
     # adds a job if max_age=0 -> /job and /event calls 
@@ -282,24 +278,11 @@ class QueryResultResource(BaseResource):
 
         if query_result_id:
             query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query_result_id, self.current_org)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
             # this is the table only result - a new one every time execute button is clicked
             # don't update this variable - can't call another func here cause we don't have query_id to update (maybe adhoc)
         else:
             query_result = None
-=======
-        elif query_id is not None:
-            query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
 
-            if query is not None:
-                if settings.ALLOW_PARAMETERS_IN_EMBEDS and parameter_values:
-                    query_result = run_query_sync(query.data_source, parameter_values, query.to_dict()['query'], max_age=max_age)
-                elif query.latest_query_data_id is not None:
-                    query_result = get_object_or_404(models.QueryResult.get_by_id_and_org, query.latest_query_data_id, self.current_org)
->>>>>>> 5b54a777d91e18398f68fcae4bdc669f438faec0
 
         if query_result:
             require_access(query_result.data_source.groups, self.current_user, view_only)
@@ -343,19 +326,11 @@ class QueryResultResource(BaseResource):
                 if (not query_result.is_same_query(query_text, query_result.data_source)):
                     # 1. save the query 2. get predefined visual json 3. add json to query object visualizations
                     visualization_resource = VisualizationListResource()
-<<<<<<< HEAD
-	            try:
-                        saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
-                    except Exception as e:
-                        abort(500,e.message)                    # TODO try catch
-                    #saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
-=======
-                    # TODO try catch
+
                     try:
                         saved_query_id = visualization_resource.save_and_add_visual(query_result_dict, file_name, query_text)
                     except Exception as e:
                         abort(500,e.message)
->>>>>>> 001ce29eba1fcd690a3c4c2691b90b998eb5628a
 
             if saved_query_id:
                 query_result_dict['query_id'] = saved_query_id
