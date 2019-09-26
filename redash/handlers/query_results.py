@@ -37,12 +37,19 @@ def get_mappings():
     sentences.append("how many usaa families are engaging in monthly email marketing campaign across california region in 2016")
     sentences.append("which newsletter getting highest engagements in 2016")
     sentences.append("show me usaa families who has purchased small business insurance across texas")
-    sentences.append("transaction volume of renewal transactions in 2016 across states")
+    sentences.append("transaction volume of renewal transactions in 2016 across states") # bar chart
     sentences.append("how many requests for auto loan came through last year search engine marketing campaigns?")
-    
-    sentences.append("show number of transactions for each product")
-    sentences.append("get number of transactions for Auto Insurance and Rental Insurance grouped by month")
+
+    sentences.append("show number of transactions for each product") # pi chart
+    sentences.append("get number of transactions for Auto Insurance and Rental Insurance grouped by month") # line chart
     sentences.append("show me number of transactions for each state as a map")
+
+    sentences.append("get number of movies by each country after 2001") # q13_query
+    sentences.append("top 10 top earning action movies") # q14_query
+    sentences.append("get the average gross of movies per year") # q15_query
+    sentences.append("show number of movies released per year") # q16_query
+    sentences.append("show the average earning and average duration of movies starring Tom Cruise since 2001")
+    sentences.append("show me all movies")
 
 
     sqls.append("select count(*) from (select f.family_id from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Rental Insurance' or prod_name='Auto Insurance' and act_date > '2017-06-01' and dob > '1990-01-01' group by f.family_id having count(distinct p.prod_id)>1) as A;")
@@ -59,30 +66,39 @@ def get_mappings():
     sqls.append("select count(*),prod_name,DATE_FORMAT(act_date, \"%y-%m\") as month_date from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id where prod_name='Auto Insurance' or prod_name='Rental Insurance' group by month_date,prod_name;")
     sqls.append("select count(*) as volume,l.state,l.lat,l.longitude from families f inner join transactions t on f.family_id = t.family_id inner join finance_products p on p.prod_id = t.prod_id inner join lat_long l on f.state=l.state where marketing='email' group by state;")
 
+    sqls.append("select count(*), country from movies where title_year > 2001 group by country;")
+    sqls.append("select movie_title, gross from movies where genres like '%Action%' order by gross desc limit 10")
+    sqls.append("select avg(gross) as avg_gross, title_year from movies group by title_year having avg_gross > 100")
+    sqls.append("select count(*), title_year from movies group by title_year")
+    sqls.append("select avg(gross), avg(duration) from movies where actor_1_name like '%Tom Cruise%' and title_year > 2001")
+    sqls.append("select * from movies limit 10;")
+
     assert(len(sentences)==len(sqls))
     for i in range(len(sentences)):
         f = stem_filter_check(sentences[i])
         mapper[f] = (sqls[i],'q'+str(i+1)+'_query',sentences[i])
-       # map(result of stem-filter-check) = (sql-transalation , q3_query , cleaned english sentence) 
+       # map(result of stem-filter-check) = (sql-transalation , q3_query , cleaned english sentence)
 
-    mapper['Show me the number of male and female employees']=('select gender,count(*) from employees group by gender;','gender_query')
-    mapper['Show the number of employees in each department']=('select dept_no,count(*) from dept_emp group by dept_no;','')
-    mapper['What is the number of employees in each title']=('select title,count(*) from titles group by title;','title_query')
-    mapper['What are the last names of the employees whose salary is more than 150000']=('select last_name from employees where emp_no in (select emp_no from salaries where salary > 150000);','')
+
+    # mapper['show number of movies released each year'] = ('select count(*), year from movies group by title_year','query01')
+    # mapper['top 10 highest earning movies'] = ('select movie_title from movies order by gross limit 10','query02')
+    # mapper['show number of movies for each director after 2001'] = ('select count(*)','query03')
+    # mapper['Show me the number of male and female employees']=('select gender,count(*) from employees group by gender;','gender_query')
+    # mapper['Show the number of employees in each department']=('select dept_no,count(*) from dept_emp group by dept_no;','')
+    # mapper['What is the number of employees in each title']=('select title,count(*) from titles group by title;','title_query')
+    # mapper['What are the last names of the employees whose salary is more than 150000']=('select last_name from employees where emp_no in (select emp_no from salaries where salary > 150000);','')
     return mapper
 
 def stem_filter_check(ip_string):
     f = re.findall(r"[\w]+",ip_string.lower())
-    #f = " ".join(f)
     corrected_words = [sc.correction(i) for i in f]
 
-    stop_words = set(['me','of','a','in','to','are','is','for','am','on']) 
+    stop_words = {'me','of','a','in','to','are','is','for','am','on'}
     #stop_words = set(stopwords.words('english'))
-    stop_words = stop_words - set(['which','how','where','what','and','or'])
+    stop_words = stop_words - {'which','how','where','what','and','or'}
     filtered_words = [i for i in corrected_words if i not in stop_words]
 
     stemmer = SnowballStemmer("english")
-    #stemmed_words = filtered_words 
     stemmed_words = [stemmer.stem(i) for i in filtered_words]
 
     return "".join(stemmed_words)
@@ -146,7 +162,7 @@ def run_query_sync(data_source, parameter_values, query_text, max_age=0):
         return None
 
 def run_query(data_source, parameter_values, query_text, query_id, max_age=0):
-    # adds a job if max_age=0 -> /job and /event calls 
+    # adds a job if max_age=0 -> /job and /event calls
     # how is status=3 prompting /query_results/2 call ?
     # anyway, query_result/2 call - model.py - gets final result through db.sessions
     # how is celery job connected to db.session object ??
@@ -269,7 +285,8 @@ class QueryResultResource(BaseResource):
         # They need to be split, as they have different logic (for example, retrieving by query id
         # should check for query parameters and shouldn't cache the result).
 
-        should_cache = query_result_id is not None
+        # should_cache = query_result_id is not None
+        should_cache = False
 
         parameter_values = collect_parameters_from_request(request.args)
         max_age = int(request.args.get('maxAge', 0))
@@ -313,7 +330,7 @@ class QueryResultResource(BaseResource):
             # TODO saving again even saved queries - Solved
             # but correct way is through frontend js ... sepearate endpoint, here same string saved again as new query won't auto visualise
             # another bug ? if sql directly typed again - then auto visualize wont happen
-            
+
             mapper = get_mappings()
             file_name = None
             saved_query_id = None
@@ -323,7 +340,7 @@ class QueryResultResource(BaseResource):
                     query_text = mapper[k][2]
             #query_name = None
             if file_name:
-                if (not query_result.is_same_query(query_text, query_result.data_source)):
+                if not query_result.is_same_query(query_text, query_result.data_source):
                     # 1. save the query 2. get predefined visual json 3. add json to query object visualizations
                     visualization_resource = VisualizationListResource()
 
