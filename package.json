@@ -70,12 +70,12 @@
     "extract-text-webpack-plugin": "^2.1.2",
     "file-loader": "^0.11.2",
     "html-webpack-plugin": "^2.24.0",
-    "node-sass": "^4.5.3",
+    "node-sass": "^5.0.0",
     "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "url-loader": "^0.5.9",
     "webpack": "^2.6.1",
     "webpack-build-notifier": "^0.1.14",
-    "webpack-dev-server": "^2.4.5"
+    "webpack-dev-server": "^4.0.0"
   }
 }
