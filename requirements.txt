@@ -41,7 +41,7 @@ semver==2.2.1
 xlsxwriter==0.9.3
 pystache==0.5.4
 parsedatetime==2.1
-cryptography==2.0.2
+cryptography==42.0.8
 simplejson==3.10.0
 nltk==3.2.4
 # Uncomment the requirement for ldap3 if using ldap.
