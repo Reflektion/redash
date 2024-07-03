@@ -74,8 +74,8 @@
     "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "url-loader": "^0.5.9",
-    "webpack": "^2.6.1",
+    "webpack": "^4.0.0",
     "webpack-build-notifier": "^0.1.14",
-    "webpack-dev-server": "^2.4.5"
+    "webpack-dev-server": "^4.9.0"
   }
 }
